@@ -32,12 +32,12 @@ PlatformIO platform for Gowin FPGA development. Supports pure FPGA projects (Ver
 ### Install Platform
 
 ```bash
-# Install from git (development)
-pio pkg install --global --platform https://github.com/yourusername/platform-gowin.git
+# Install from GitHub
+pio pkg install --global --platform https://github.com/Papilio-Labs/platform-gowin.git
 
 # Or use platform_packages in platformio.ini
 [env:myenv]
-platform = https://github.com/yourusername/platform-gowin.git
+platform = https://github.com/Papilio-Labs/platform-gowin.git
 board = papilio_retrocade
 ```
 
