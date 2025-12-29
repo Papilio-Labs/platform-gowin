@@ -13,7 +13,7 @@ platform = env.PioPlatform()
 board = env.BoardConfig()
 
 # Import FPGA build functions from scripts
-env.SConscript("builder/fpga_builder.py", exports="env")
+env.SConscript(join(platform.get_dir(), "builder", "fpga_builder.py"), exports="env")
 
 # Get framework
 frameworks = env.get("PIOFRAMEWORK", [])
@@ -31,11 +31,11 @@ if "arduino" in frameworks:
     
 elif "hdl" in frameworks or "verilog" in frameworks:
     # Pure FPGA build (hdl is the new name, verilog is kept for backwards compatibility)
-    env.SConscript("builder/frameworks/hdl.py", exports="env")
+    env.SConscript(join(platform.get_dir(), "builder", "frameworks", "hdl.py"), exports="env")
     
 else:
     # Default to hdl framework for FPGA-only boards
-    env.SConscript("builder/frameworks/hdl.py", exports="env")
+    env.SConscript(join(platform.get_dir(), "builder", "frameworks", "hdl.py"), exports="env")
 
 # Configure upload targets
 env.Replace(

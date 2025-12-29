@@ -26,14 +26,12 @@
   "version": "1.0.0",
   "frameworks": {
     "hdl": {
-      "package": "framework-hdl",
       "script": "builder/frameworks/hdl.py",
       "description": "Pure HDL (Verilog/SystemVerilog/VHDL) FPGA development",
       "homepage": "https://www.gowinsemi.com/",
       "title": "HDL"
     },
     "verilog": {
-      "package": "framework-hdl",
       "script": "builder/frameworks/hdl.py",
       "description": "Alias for 'hdl' framework - supports Verilog/SystemVerilog/VHDL",
       "homepage": "https://www.gowinsemi.com/",
@@ -50,7 +48,7 @@
   "packages": {
     "toolchain-gowin": {
       "type": "toolchain",
-      "optional": false,
+      "optional": true,
       "version": "~1.9.9",
       "description": "Gowin EDA Toolchain (synthesis, place & route, bitstream generation)"
     },

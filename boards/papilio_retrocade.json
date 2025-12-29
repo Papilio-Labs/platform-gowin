@@ -17,13 +17,13 @@
     "psram_type": "qio",
     "partitions": "default.csv",
     "filesystem": "littlefs",
-    "device": "GW2AR-18",
-    "fpga_family": "GW2AR",
-    "fpga_package": "QN88C",
+    "device": "GW2A-18",
+    "fpga_family": "GW2A",
+    "fpga_package": "PG256",
     "fpga_speed": "C8/I7",
     "fpga_project": "fpga/project.gprj",
     "fpga_top_module": "top",
-    "fpga_device_full": "GW2AR-LV18QN88C8/I7"
+    "fpga_device_full": "GW2A-LV18PG256C8/I7"
   },
   "connectivity": ["wifi", "bluetooth", "ethernet"],
   "debug": {

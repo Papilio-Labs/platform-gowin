@@ -30,8 +30,8 @@ class GowinPlatform(PlatformBase):
         board_config = self.board_config(board) if board else {}
         frameworks = variables.get("pioframework", [])
         
-        # Always require Gowin toolchain for FPGA synthesis
-        self.packages["toolchain-gowin"]["optional"] = False
+        # Gowin toolchain is optional - user must install manually
+        # or specify path via board_build.gowin_path
         
         # Configure based on framework
         if "arduino" in frameworks:
@@ -40,9 +40,8 @@ class GowinPlatform(PlatformBase):
             self.packages["tool-esptoolpy"]["optional"] = False
             self.frameworks["arduino"]["package"] = "framework-arduinoespressif32"
         
-        if "verilog" in frameworks:
-            # Pure FPGA project
-            self.packages["framework-verilog"]["optional"] = True
+        # HDL and Verilog frameworks don't need additional packages
+        # (they use the toolchain-gowin which is already required)
         
         # Configure upload tools based on board
         upload_protocol = board_config.get("upload", {}).get("protocol", "")
@@ -92,16 +91,13 @@ class GowinPlatform(PlatformBase):
         Add FPGA-specific metadata to board configuration.
         
         Args:
-            board: Board configuration dict
+            board: PlatformBoardConfig object
             
         Returns:
             Updated board configuration
         """
-        # Ensure FPGA build configuration exists
-        if "build" not in board:
-            board["build"] = {}
-        
-        build = board["build"]
+        # Get build configuration (PlatformBoardConfig uses .get() method)
+        build = board.get("build", {})
         
         # Set default FPGA project path if not specified
         if "fpga_project" not in build:

@@ -31,12 +31,13 @@ env.Append(
     ]
 )
 
-# Build the FPGA bitstream
-fpga_bitstream = env.Alias(
-    "buildprog",
+# Build the FPGA bitstream using the FPGA build action
+fpga_bitstream = env.Command(
     join("$BUILD_DIR", "$PROGNAME$PROGSUFFIX"),
+    None,  # No source dependency - builder will scan FPGA sources
     env["FPGA_BUILD_ACTION"]
 )
 
-# Set as default target
+# Create alias and set as default
+env.Alias("buildprog", fpga_bitstream)
 env.Default(fpga_bitstream)

@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Module name="test_top" Lut="1" T_Register="28(0)" T_Alu="27(0)" T_Lut="2(1)">
+ <SubModule name="counter_inst" Register="28" Alu="27" Lut="1" T_Register="28(28)" T_Alu="27(27)" T_Lut="1(1)"/>
+</Module>

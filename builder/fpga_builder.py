@@ -107,11 +107,12 @@ def update_gprj_file(gprj_path, sources, fpga_dir):
                     filelist.remove(file_elem)
         
         fpga_path = Path(fpga_dir)
+        gprj_parent = Path(gprj_path).parent
         
         # Add Verilog source files
         for verilog_file in sorted(sources['verilog']):
             file_elem = ET.SubElement(filelist, 'File')
-            rel_path = verilog_file.relative_to(fpga_path.parent)
+            rel_path = verilog_file.relative_to(gprj_parent)
             file_elem.set('path', str(rel_path).replace('\\', '/'))
             file_elem.set('type', 'file.verilog')
             file_elem.set('enable', '1')
@@ -119,7 +120,7 @@ def update_gprj_file(gprj_path, sources, fpga_dir):
         # Add VHDL source files
         for vhdl_file in sorted(sources['vhdl']):
             file_elem = ET.SubElement(filelist, 'File')
-            rel_path = vhdl_file.relative_to(fpga_path.parent)
+            rel_path = vhdl_file.relative_to(gprj_parent)
             file_elem.set('path', str(rel_path).replace('\\', '/'))
             file_elem.set('type', 'file.vhdl')
             file_elem.set('enable', '1')
@@ -127,7 +128,7 @@ def update_gprj_file(gprj_path, sources, fpga_dir):
         # Add constraint files
         for cst_file in sorted(sources['constraints']):
             file_elem = ET.SubElement(filelist, 'File')
-            rel_path = cst_file.relative_to(fpga_path.parent)
+            rel_path = cst_file.relative_to(gprj_parent)
             file_elem.set('path', str(rel_path).replace('\\', '/'))
             file_elem.set('type', 'file.cst')
             file_elem.set('enable', '1')
@@ -181,10 +182,32 @@ def build_fpga_action(target, source, env):
     print(f"Updating project file: {gprj_path}")
     update_gprj_file(gprj_path, sources, fpga_dir)
     
-    # Build FPGA bitstream
+    # Create Tcl script for gw_sh
+    tcl_script = fpga_dir / "build_script.tcl"
+    with open(tcl_script, 'w') as f:
+        f.write(f"""# Auto-generated Tcl script for gw_sh
+# Open project
+open_project {gprj_path.name}
+
+# Run synthesis
+run syn
+
+# Run place and route
+run pnr
+
+# Generate bitstream
+run bit
+
+# Close project
+exit
+"""
+
+)
+    
+    # Build FPGA bitstream using Tcl script
     print("Starting FPGA synthesis and place & route...")
     result = subprocess.run(
-        [str(gw_sh), str(gprj_path)],
+        [str(gw_sh), str(tcl_script)],
         cwd=str(fpga_dir),
         capture_output=True,
         text=True,
