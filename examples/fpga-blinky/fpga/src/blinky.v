@@ -4,7 +4,12 @@
  * Pure FPGA project - no MCU code
  * Blinks LEDs in a rotating pattern
  * 
- * Target: Gowin GW5A-25A (Tang Primer 20K)
+ * Target: Tang Primer 20K (GW5A-25A with 6 discrete LEDs)
+ * 
+ * NOTE: This design is for boards with discrete LEDs.
+ *       Papilio RetroCade has only an RGB LED (WS2812) which
+ *       requires different control logic. See 'papilio-blinky'
+ *       example for RGB LED control.
  */
 
 module blinky (
