@@ -4,9 +4,9 @@ Pure FPGA project demonstrating LED blinking pattern on Gowin FPGA.
 
 ## Hardware
 
-**Target Hardware**: Tang Primer 20K module or standalone GW5A-25A board with discrete LEDs
+**Target Hardware**: Papilio RetroCade (Gowin GW2AR-18)
 
-**Note for Papilio RetroCade Users**: This example is designed for boards with discrete LEDs (like Tang Primer 20K). The Papilio RetroCade board only has a single RGB LED that requires different control logic (WS2812/SK6812 protocol). For RGB LED control on Papilio RetroCade, use the `papilio-blinky` example instead, which demonstrates proper RGB LED control via the ESP32.
+**Note**: This example uses the PMOD connector pins as outputs. You'll need to connect external LEDs (with appropriate resistors) to the PMOD connector to see the blinking pattern. The Papilio RetroCade does not have on-board discrete LEDs, only a WS2812 RGB LED.
 
 ## Features
 
@@ -35,18 +35,21 @@ pio run -t upload
 
 ## Pin Assignments
 
-**CRITICAL**: The pin assignments in `fpga/constraints/pins.cst` are for **Tang Primer 20K** hardware only. They **will not work** on Papilio RetroCade without modification.
+Pin assignments are defined in `fpga/constraints/pins.cst` for the **Papilio RetroCade** board.
 
-**Papilio RetroCade** does not have discrete LEDs - it has only a single RGB LED (WS2812/SK6812) that cannot be controlled with simple GPIO pins. To use this example on Papilio RetroCade:
-1. Remove the LED pin assignments from `pins.cst`
-2. Add your own peripheral pin assignments (buttons, sensors, etc.)
-3. Or use the `papilio-blinky` example which demonstrates RGB LED control
+### Papilio RetroCade Pins
 
-### Default Pins (Tang Primer 20K Only)
+- **Clock**: ESP32_GPIO1 (A9) - Requires ESP32 to provide clock signal
+- **Reset**: ESP32_GPIO2 (L12) - Active low
+- **LED Outputs** (PMOD connector):
+  - led[0]: PMOD_IOA0 (N9)
+  - led[1]: PMOD_IOA1 (R9)
+  - led[2]: PMOD_IOA2 (N8)
+  - led[3]: PMOD_IOA3 (L9)
+  - led[4]: PMOD_IOB0 (L8)
+  - led[5]: PMOD_IOB1 (M6)
 
-- Clock: H11 (27 MHz oscillator)
-- Reset: F11
-- LEDs: E11, D11, C11, B11, A11, A10 (6 discrete LEDs)
+**Important**: Connect LEDs with appropriate current-limiting resistors to the PMOD pins. The PMOD connector outputs 3.3V logic levels.
 
 ## Customization
 

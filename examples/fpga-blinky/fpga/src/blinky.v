@@ -2,18 +2,17 @@
  * Simple LED Blinky for Gowin FPGA
  * 
  * Pure FPGA project - no MCU code
- * Blinks LEDs in a rotating pattern
+ * Blinks LEDs in a rotating pattern on PMOD connector
  * 
- * Target: Tang Primer 20K (GW5A-25A with 6 discrete LEDs)
+ * Target: Papilio RetroCade (GW2AR-18)
  * 
- * NOTE: This design is for boards with discrete LEDs.
- *       Papilio RetroCade has only an RGB LED (WS2812) which
- *       requires different control logic. See 'papilio-blinky'
- *       example for RGB LED control.
+ * NOTE: Clock must be provided by ESP32 on GPIO1.
+ *       Connect LEDs to PMOD connector pins to see output.
+ *       Assumes ~27 MHz clock from ESP32.
  */
 
 module blinky (
-    // System clock (27 MHz on Tang Primer 20K)
+    // System clock (provided by ESP32, typically ~27 MHz)
     input wire clk,
     
     // System reset (active low)

@@ -17,13 +17,13 @@
     "psram_type": "qio",
     "partitions": "default.csv",
     "filesystem": "littlefs",
-    "device": "GW5A-25A",
-    "fpga_family": "GW5A",
-    "fpga_package": "MG121NES",
-    "fpga_speed": "-2",
+    "device": "GW2AR-18",
+    "fpga_family": "GW2AR",
+    "fpga_package": "QN88C",
+    "fpga_speed": "C8/I7",
     "fpga_project": "fpga/project.gprj",
     "fpga_top_module": "top",
-    "fpga_device_full": "GW5A-LV25MG121NES"
+    "fpga_device_full": "GW2AR-LV18QN88C8/I7"
   },
   "connectivity": ["wifi", "bluetooth", "ethernet"],
   "debug": {
