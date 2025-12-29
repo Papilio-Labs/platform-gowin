@@ -10,7 +10,8 @@ Pure FPGA project demonstrating LED blinking pattern on Gowin FPGA.
 ## Features
 
 - Simple rotating LED pattern
-- Pure Verilog design (no MCU code)
+- Mixed HDL design (Verilog + VHDL example)
+- VHDL counter module demonstration
 - Automatic source file discovery
 - Multiple upload protocol support
 

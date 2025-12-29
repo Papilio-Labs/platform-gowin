@@ -30,7 +30,7 @@
     "openocd_target": "esp32s3.cfg",
     "openocd_extra_args": ["-c", "adapter speed 5000"]
   },
-  "frameworks": ["arduino", "verilog"],
+  "frameworks": ["arduino", "hdl", "verilog"],
   "name": "Papilio RetroCade",
   "upload": {
     "flash_size": "4MB",

@@ -1,6 +1,6 @@
 # Gowin FPGA Platform for PlatformIO
 
-PlatformIO platform for Gowin FPGA development. Supports pure FPGA projects (Verilog/SystemVerilog) and dual-target projects (MCU + FPGA) using the Gowin Educational IDE toolchain.
+PlatformIO platform for Gowin FPGA development. Supports pure FPGA projects (Verilog/SystemVerilog/VHDL) and dual-target projects (MCU + FPGA) using the Gowin Educational IDE toolchain.
 
 ## Supported Devices
 
@@ -19,10 +19,11 @@ PlatformIO platform for Gowin FPGA development. Supports pure FPGA projects (Ver
 
 ## Features
 
-✅ Automatic Verilog source file discovery
+✅ Automatic HDL source file discovery (Verilog, SystemVerilog, VHDL)
+✅ Mixed-language projects (Verilog + VHDL)
 ✅ Preserves user-added IP cores in Gowin projects
 ✅ Multiple upload protocols (pesptool, openFPGALoader, Gowin Programmer)
-✅ Pure FPGA projects with `framework = verilog`
+✅ Pure FPGA projects with `framework = hdl` (or `framework = verilog`)
 ✅ Dual-target projects (MCU + FPGA) with `framework = arduino`
 ✅ Integrated with PlatformIO ecosystem
 
@@ -80,7 +81,7 @@ default_envs = my_fpga
 [env:my_fpga]
 platform = gowin
 board = papilio_retrocade
-framework = verilog
+framework = hdl  ; Use 'hdl' for Verilog/VHDL (or 'verilog' for backwards compatibility)
 
 ; Upload via pesptool (ESP32 SPI bridge)
 upload_protocol = pesptool
@@ -93,7 +94,8 @@ my_project/
 └── fpga/
     ├── project.gprj       # Gowin project file
     ├── src/
-    │   └── top.v          # Your Verilog code
+    │   ├── top.v          # Your Verilog code
+    │   └── module.vhd     # Your VHDL code (optional)
     └── constraints/
         └── pins.cst       # Pin constraints
 ```
@@ -178,8 +180,24 @@ upload_protocol = pesptool  ; or openfpgaloader, gowin, esptool
 3. Save the project file
 4. Build with `pio run` - IP cores are automatically preserved
 
-The build system only manages source files (`.v`, `.sv`, `.cst`). 
+The build system manages HDL source files (`.v`, `.sv`, `.vhd`, `.vhdl`) and constraints (`.cst`). 
 All IP cores and custom project settings are preserved.
+
+### Mixed-Language Projects
+
+The Gowin toolchain fully supports mixed Verilog and VHDL designs. Simply place your source files in the `fpga/src/` directory:
+
+```
+fpga/
+├── src/
+│   ├── top.v              # Verilog top module
+│   ├── vhdl_module.vhd    # VHDL component
+│   └── verilog_helper.sv  # SystemVerilog helper
+└── constraints/
+    └── pins.cst
+```
+
+The build system automatically detects and adds all HDL files to your `.gprj` project. You can instantiate VHDL components in Verilog modules and vice versa.
 
 ## Upload Protocols
 
@@ -225,7 +243,7 @@ Create custom board definitions in `boards/myboard.json`:
     "fpga_package": "QN88P",
     "fpga_project": "fpga/project.gprj"
   },
-  "frameworks": ["verilog"],
+  "frameworks": ["hdl"],
   "name": "My Custom Board",
   "upload": {
     "protocol": "openfpgaloader"

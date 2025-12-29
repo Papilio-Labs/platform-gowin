@@ -60,6 +60,7 @@ def scan_fpga_sources(fpga_dir):
     """Recursively scan FPGA directory for source files."""
     sources = {
         'verilog': [],
+        'vhdl': [],
         'constraints': []
     }
     
@@ -67,11 +68,15 @@ def scan_fpga_sources(fpga_dir):
     if not fpga_path.exists():
         return sources
     
-    # Scan for Verilog files
+    # Scan for HDL source files
     src_dir = fpga_path / "src"
     if src_dir.exists():
+        # Verilog/SystemVerilog files
         for ext in ['.v', '.sv', '.vh', '.svh']:
             sources['verilog'].extend(src_dir.rglob(f"*{ext}"))
+        # VHDL files
+        for ext in ['.vhd', '.vhdl']:
+            sources['vhdl'].extend(src_dir.rglob(f"*{ext}"))
     
     # Scan for constraint files
     constraints_dir = fpga_path / "constraints"
@@ -97,7 +102,7 @@ def update_gprj_file(gprj_path, sources, fpga_dir):
         # Remove existing auto-generated entries
         for file_elem in list(filelist.findall('File')):
             path = file_elem.get('path', '')
-            if any(ext in path for ext in ['.v', '.sv', '.cst', '.sdc']):
+            if any(ext in path for ext in ['.v', '.sv', '.vhd', '.vhdl', '.cst', '.sdc']):
                 if 'src/' in path or 'constraints/' in path:
                     filelist.remove(file_elem)
         
@@ -109,6 +114,14 @@ def update_gprj_file(gprj_path, sources, fpga_dir):
             rel_path = verilog_file.relative_to(fpga_path.parent)
             file_elem.set('path', str(rel_path).replace('\\', '/'))
             file_elem.set('type', 'file.verilog')
+            file_elem.set('enable', '1')
+        
+        # Add VHDL source files
+        for vhdl_file in sorted(sources['vhdl']):
+            file_elem = ET.SubElement(filelist, 'File')
+            rel_path = vhdl_file.relative_to(fpga_path.parent)
+            file_elem.set('path', str(rel_path).replace('\\', '/'))
+            file_elem.set('type', 'file.vhdl')
             file_elem.set('enable', '1')
         
         # Add constraint files
@@ -161,7 +174,8 @@ def build_fpga_action(target, source, env):
     # Scan and update sources
     print("Scanning for FPGA source files...")
     sources = scan_fpga_sources(fpga_dir)
-    print(f"  Found {len(sources['verilog'])} Verilog file(s)")
+    print(f"  Found {len(sources['verilog'])} Verilog/SystemVerilog file(s)")
+    print(f"  Found {len(sources['vhdl'])} VHDL file(s)")
     print(f"  Found {len(sources['constraints'])} constraint file(s)")
     
     print(f"Updating project file: {gprj_path}")

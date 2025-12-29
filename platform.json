@@ -11,6 +11,8 @@
     "hardware",
     "verilog",
     "systemverilog",
+    "vhdl",
+    "hdl",
     "tang",
     "sipeed"
   ],
@@ -23,12 +25,19 @@
   },
   "version": "1.0.0",
   "frameworks": {
-    "verilog": {
-      "package": "framework-verilog",
-      "script": "builder/frameworks/verilog.py",
-      "description": "Pure Verilog/SystemVerilog FPGA development",
+    "hdl": {
+      "package": "framework-hdl",
+      "script": "builder/frameworks/hdl.py",
+      "description": "Pure HDL (Verilog/SystemVerilog/VHDL) FPGA development",
       "homepage": "https://www.gowinsemi.com/",
-      "title": "Verilog"
+      "title": "HDL"
+    },
+    "verilog": {
+      "package": "framework-hdl",
+      "script": "builder/frameworks/hdl.py",
+      "description": "Alias for 'hdl' framework - supports Verilog/SystemVerilog/VHDL",
+      "homepage": "https://www.gowinsemi.com/",
+      "title": "Verilog (HDL)"
     },
     "arduino": {
       "package": "framework-arduinoespressif32",

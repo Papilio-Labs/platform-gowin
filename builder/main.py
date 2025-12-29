@@ -29,13 +29,13 @@ if "arduino" in frameworks:
     firmware = env.get("PIOMAINPROG")
     env.AddPostAction(firmware, env.VerboseAction(env["FPGA_BUILD_ACTION"], "Building FPGA gateware..."))
     
-elif "verilog" in frameworks:
-    # Pure FPGA build
-    env.SConscript("builder/frameworks/verilog.py", exports="env")
+elif "hdl" in frameworks or "verilog" in frameworks:
+    # Pure FPGA build (hdl is the new name, verilog is kept for backwards compatibility)
+    env.SConscript("builder/frameworks/hdl.py", exports="env")
     
 else:
-    # Default to verilog framework for FPGA-only boards
-    env.SConscript("builder/frameworks/verilog.py", exports="env")
+    # Default to hdl framework for FPGA-only boards
+    env.SConscript("builder/frameworks/hdl.py", exports="env")
 
 # Configure upload targets
 env.Replace(

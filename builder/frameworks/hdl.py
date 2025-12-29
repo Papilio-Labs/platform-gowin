@@ -1,7 +1,8 @@
 """
-Verilog Framework for Pure FPGA Projects
+HDL Framework for Pure FPGA Projects
 
-Provides build configuration for Verilog/SystemVerilog FPGA projects.
+Provides build configuration for HDL (Verilog/SystemVerilog/VHDL) FPGA projects.
+Supports mixed-language designs with both Verilog and VHDL source files.
 """
 
 from os.path import join
