@@ -20,19 +20,17 @@ frameworks = env.get("PIOFRAMEWORK", [])
 
 if "arduino" in frameworks:
     # Dual-target build: Arduino (ESP32) + FPGA
-    # Need to use espressif32 platform for Arduino ESP32 support
-    # Load the platform's main build script which will set up the ESP32 environment
+    # Load the espressif32 platform builder first to set up all necessary tools
     try:
-        esp32_platform = platform.get_package_dir("platformio/espressif32")
-        if esp32_platform:
-            env.SConscript(join(esp32_platform, "builder", "main.py"))
-        else:
-            # Fallback: try loading Arduino framework directly
-            env.SConscript(
-                join(platform.get_package_dir("framework-arduinoespressif32"), "tools", "platformio-build.py")
-            )
-    except:
-        # If platform not found, try loading framework directly
+        # Try to get espressif32 platform as a dependency
+        from platformio.platform.factory import PlatformFactory
+        esp32_platform = PlatformFactory.new("espressif32")
+        esp32_builder = join(esp32_platform.get_dir(), "builder", "main.py")
+        env.SConscript(esp32_builder)
+    except Exception as e:
+        print(f"Warning: Could not load espressif32 platform builder: {e}")
+        print("Falling back to direct framework load...")
+        # Fallback: try loading Arduino framework directly
         env.SConscript(
             join(platform.get_package_dir("framework-arduinoespressif32"), "tools", "platformio-build.py")
         )
