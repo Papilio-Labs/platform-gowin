@@ -1,46 +1,37 @@
-//
-// Pin Constraints for FPGA Blinky Example
-// Papilio RetroCade - PMOD Output Blinky
-//
-// Target: Papilio RetroCade (Gowin GW2AR-18)
-// Package: QN88C (88-pin QFN)
-// Device: GW2AR-LV18QN88C8/I7
+//******************************************************************************
+// Pin Constraints for FPGA Mixed HDL Blinky Example
+// Target: Papilio RetroCade (Gowin GW2A-LV18PG256C8/I7)
+// Package: PG256 (256-pin BGA)
 //
 // This example uses the PMOD connector pins as outputs for a simple
 // rotating LED pattern. Connect LEDs to the PMOD connector for visual output.
-//
+//******************************************************************************
 
-//==============================================================================
-// System Clock - Note: No oscillator input defined in Papilio_Arcade.cst
-// You may need to generate clock from PLL or use ESP32 as clock source
-//==============================================================================
-// For now, using ESP32_GPIO1 as clock input (requires ESP32 to provide clock)
+// 27MHz Clock from ESP32
 IO_LOC "clk" H11;
 IO_PORT "clk" IO_TYPE=LVCMOS33 PULL_MODE=UP;
 
-// Using ESP32_GPIO2 as reset (active low)
+// Reset from ESP32
 IO_LOC "rst_n" L12;
 IO_PORT "rst_n" IO_TYPE=LVCMOS33 PULL_MODE=UP;
 
-//==============================================================================
-// PMOD Output "LEDs" - Connect external LEDs to PMOD connector
-//==============================================================================
-// PMOD1 Type 1A GPIO Pins - Top Row
-IO_LOC "led[0]" N9;
+// PMOD Output "LEDs" - Connect external LEDs with resistors to PMOD connector
+// Using PMOD1 Type 1A GPIO Pins - Bottom Row (avoiding top row SSPI conflict)
+IO_LOC "led[0]" L8;
 IO_PORT "led[0]" IO_TYPE=LVCMOS33 PULL_MODE=NONE DRIVE=8;
 
-IO_LOC "led[1]" R9;
+IO_LOC "led[1]" P7;
 IO_PORT "led[1]" IO_TYPE=LVCMOS33 PULL_MODE=NONE DRIVE=8;
 
-IO_LOC "led[2]" N8;
+IO_LOC "led[2]" R7;
 IO_PORT "led[2]" IO_TYPE=LVCMOS33 PULL_MODE=NONE DRIVE=8;
 
-IO_LOC "led[3]" L9;
+// ESP32 GPIO pins (general purpose)
+IO_LOC "led[3]" A9;
 IO_PORT "led[3]" IO_TYPE=LVCMOS33 PULL_MODE=NONE DRIVE=8;
 
-// PMOD1 Type 1A GPIO Pins - Bottom Row
-IO_LOC "led[4]" L8;
+IO_LOC "led[4]" J11;
 IO_PORT "led[4]" IO_TYPE=LVCMOS33 PULL_MODE=NONE DRIVE=8;
 
-IO_LOC "led[5]" M6;
+IO_LOC "led[5]" F10;
 IO_PORT "led[5]" IO_TYPE=LVCMOS33 PULL_MODE=NONE DRIVE=8;
