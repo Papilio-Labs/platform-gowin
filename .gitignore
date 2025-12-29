@@ -27,3 +27,6 @@ env/
 *.bak
 *.orig
 
+examples/ws2812b-rgb-led/fpga/build_script.tcl
+examples/ws2812b-rgb-led/fpga/build_script.tcl
+examples/ws2812b-rgb-led/fpga/rgb_led.gprj.user
