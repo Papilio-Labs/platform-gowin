@@ -1,0 +1,2 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Module name="blinky" Register="32" Alu="24" Lut="10" T_Register="32(32)" T_Alu="24(24)" T_Lut="10(10)"/>

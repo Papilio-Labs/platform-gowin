@@ -1,14 +1,13 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE gowin-fpga-project>
+<?xml version='1.0' encoding='utf-8'?>
 <Project>
     <Template>FPGA</Template>
     <Version>5</Version>
-    <Device name="GW5A-25A" pn="GW5A-LV25MG121NES">gw5a25a-002</Device>
+    <Device name="GW2A-18C" pn="GW2A-LV18PG256C8/I7">gw2a18c-011</Device>
     <FileList>
-        <!-- Source files will be automatically added by the build system -->
-    </FileList>
+        
+    <File path="src/blinky.v" type="file.verilog" enable="1" /><File path="src/counter.vhd" type="file.vhdl" enable="1" /><File path="constraints/pins.cst" type="file.cst" enable="1" /></FileList>
     <OptionInfo>
-        <TopModule name="blinky"></TopModule>
+        <TopModule name="blinky" />
         <Gowin>
             <GowinSynthesis>
                 <Goal>Speed</Goal>
@@ -41,9 +40,9 @@
     </OptionInfo>
     <Impl>
         <FPGADevice>
-            <DeviceName>GW5A-25A</DeviceName>
-            <PackageName>MG121NES</PackageName>
-            <SpeedGrade>-2</SpeedGrade>
+            <DeviceName>GW2A-18C</DeviceName>
+            <PackageName>PG256</PackageName>
+            <SpeedGrade>C8/I7</SpeedGrade>
         </FPGADevice>
     </Impl>
 </Project>

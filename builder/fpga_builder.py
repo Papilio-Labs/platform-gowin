@@ -185,6 +185,9 @@ def build_fpga_action(target, source, env):
     print(f"Updating project file: {gprj_path}")
     update_gprj_file(gprj_path, sources, fpga_dir)
     
+    # Get top module name from board config
+    top_module = env.BoardConfig().get("build.fpga_top_module", "top")
+    
     # Create Tcl script for gw_sh
     tcl_script = fpga_dir / "build_script.tcl"
     with open(tcl_script, 'w') as f:
@@ -192,18 +195,15 @@ def build_fpga_action(target, source, env):
 # Open project
 open_project {gprj_path.name}
 
-# Run synthesis
-run syn
+# Set top module explicitly
+set_option -top_module {top_module}
 
-# Run place and route
-run pnr
-
+# Run all (synthesis, place and route, bitstream generation)
+run all
 
 # Close project
 exit
-"""
-
-)
+""")
     
     # Build FPGA bitstream using Tcl script
     print("Starting FPGA synthesis and place & route...")
