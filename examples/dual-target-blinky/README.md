@@ -1,19 +1,19 @@
-# Papilio RetroCade Blinky Example
+# Papilio RetroCade GPIO Pass-through Example
 
-Dual-target example demonstrating ESP32-S3 and Gowin FPGA communication via SPI.
+Simple dual-target example demonstrating ESP32-S3 and Gowin FPGA GPIO communication.
 
 ## Hardware
 
 - ESP32-S3 SuperMini (MCU)
-- Gowin GW5A-25A FPGA (Tang Primer 20K)
+- Gowin GW2A-18 FPGA
 - Papilio RetroCade Board
 
 ## Features
 
-- ESP32 SPI master communication with FPGA
-- FPGA LED blinky pattern
-- SPI slave interface on FPGA
-- Serial console commands for testing
+- ESP32 toggles GPIO1 pin
+- FPGA passes the signal through to all 8 PMOD pins
+- Pure combinational logic (no clock required)
+- Serial console output
 
 ## Building
 
@@ -38,32 +38,27 @@ pio run -t upload
 ## Usage
 
 1. Connect to serial monitor: `pio device monitor`
-2. Send commands:
-   - `r` - Reset FPGA
-   - `i` - Read FPGA ID
-   - `0-9` - Set LED pattern
-   - `h` - Show help
+2. Observe GPIO1 toggling every second (HIGH/LOW messages)
+3. All 8 PMOD pins will follow GPIO1 state
 
 ## Pin Assignments
 
-**IMPORTANT**: Verify pin assignments in `fpga/constraints/pins.cst` match your actual hardware before building!
+### ESP32 to FPGA
 
-### ESP32-S3 to FPGA SPI
+- ESP32 GPIO1 → FPGA gpio1_in (pin A9)
 
-- CLK: GPIO 12
-- MISO: GPIO 9
-- MOSI: GPIO 11
-- CS: GPIO 10
-- RST: GPIO 26
+### FPGA PMOD Outputs
+
+- pmod_out[0]: pin N9 (PMOD_IOA0)
+- pmod_out[1]: pin R9 (PMOD_IOA1)
+- pmod_out[2]: pin N8 (PMOD_IOA2)
+- pmod_out[3]: pin L9 (PMOD_IOA3)
+- pmod_out[4]: pin L8 (PMOD_IOB0)
+- pmod_out[5]: pin M6 (PMOD_IOB1)
+- pmod_out[6]: pin P7 (PMOD_IOB2)
+- pmod_out[7]: pin R7 (PMOD_IOB3)
 
 ## Customization
-
-### Add IP Cores
-
-1. Open `fpga/project.gprj` in Gowin IDE
-2. Add IP cores through the GUI
-3. Save the project
-4. Build with `pio run` - your IP cores will be preserved
 
 ### Modify FPGA Design
 
