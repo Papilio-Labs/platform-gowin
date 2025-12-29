@@ -4,21 +4,23 @@ Example projects demonstrating various features of the Gowin FPGA platform for P
 
 ## Pure FPGA Examples
 
-### fpga-blinky
-Basic FPGA example with mixed Verilog/VHDL demonstrating:
+### fpga-mixed-hdl
+Mixed Verilog/VHDL example demonstrating:
 - Counter logic in VHDL
 - Top-level wrapper in Verilog
 - PMOD GPIO outputs
+- Language interoperability
 
-### rgb-led-blink
-WS2812B RGB LED control example:
-- Precise timing control for addressable RGB LED
+### ws2812b-rgb-led
+WS2812B addressable RGB LED controller:
+- Precise timing control for WS2812B protocol
 - State machine implementation
-- Single LED color display on onboard WS2812B
+- GRB color format handling
+- Onboard RGB LED demonstration
 
 ## Dual-Target Examples (ESP32 + FPGA)
 
-### papilio-blinky
+### dual-target-blinky
 Complete dual-target example showing:
 - ESP32 Arduino firmware
 - FPGA SPI slave peripheral
