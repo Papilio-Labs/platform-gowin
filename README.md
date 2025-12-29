@@ -233,6 +233,29 @@ upload_protocol = gowin
 
 ## Board Definitions
 
+### Using Existing Boards
+
+The platform includes board definitions with correct FPGA device settings and pin mappings.
+
+### Pin Constraint Templates
+
+Reference CST files for supported boards are available in `misc/cst/`:
+
+```bash
+# Copy complete pin template for your board
+cp misc/cst/papilio_retrocade.cst fpga/constraints/pins.cst
+
+# Or copy individual peripheral sections as needed
+```
+
+See [misc/cst/README.md](misc/cst/README.md) for complete documentation on:
+- Available peripherals per board
+- Signal naming conventions
+- IO standards and electrical specifications
+- PULL_MODE and DRIVE strength guidance
+
+### Creating Custom Board Definitions
+
 Create custom board definitions in `boards/myboard.json`:
 
 ```json
