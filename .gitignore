@@ -5,10 +5,12 @@
 __pycache__/
 
 # FPGA build outputs
-fpga/impl/
-fpga/*.rpt
-fpga/*.log
-fpga/*.gprj.user
+**/fpga/impl/
+**/fpga/*.rpt
+**/fpga/*.log
+**/fpga/*.gprj.user
+**/fpga/build_script.tcl
+impl/*
 
 # Editor files
 .DS_Store
@@ -24,3 +26,4 @@ env/
 # Backup files
 *.bak
 *.orig
+
