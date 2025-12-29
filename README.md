@@ -58,6 +58,9 @@ board = papilio_retrocade
 
 #### pesptool (for ESP32 + FPGA boards)
 
+**Windows:** Automatically downloaded by PlatformIO when you set `upload_protocol = pesptool`
+
+**Linux/Mac:** Manual installation required:
 ```bash
 pip install git+https://github.com/Papilio-Labs/pesptool.git
 ```

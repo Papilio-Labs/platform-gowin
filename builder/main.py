@@ -61,6 +61,57 @@ env.Replace(
 )
 
 if upload_protocol == "pesptool":
+    # Download pesptool.exe on Windows if not already available
+    import sys
+    import os
+    from os.path import join, isfile, dirname
+    
+    pesptool_cmd = "pesptool"
+    
+    if sys.platform.startswith("win"):
+        # Store in platform's packages directory
+        platform_dir = dirname(env.PioPlatform().get_dir())
+        pesptool_cache_dir = join(platform_dir, ".cache", "pesptool")
+        pesptool_exe = join(pesptool_cache_dir, "pesptool.exe")
+        
+        if not isfile(pesptool_exe):
+            # Download pesptool.exe from GitHub releases
+            import urllib.request
+            import hashlib
+            
+            os.makedirs(pesptool_cache_dir, exist_ok=True)
+            url = "https://github.com/Papilio-Labs/papilio-loader-mcp/releases/download/v0.1.0/pesptool.exe"
+            expected_sha256 = "db0ef34bfa24eb3142f30ca58b6bda5c2f14d88d284095fa5e799283771aeed5"
+            
+            print("Downloading pesptool.exe (20.8 MB)...")
+            temp_file = pesptool_exe + ".tmp"
+            
+            try:
+                urllib.request.urlretrieve(url, temp_file)
+                
+                # Verify SHA256
+                sha256_hash = hashlib.sha256()
+                with open(temp_file, "rb") as f:
+                    for byte_block in iter(lambda: f.read(4096), b""):
+                        sha256_hash.update(byte_block)
+                
+                if sha256_hash.hexdigest().lower() == expected_sha256.lower():
+                    os.rename(temp_file, pesptool_exe)
+                    print("pesptool.exe downloaded and verified successfully!")
+                else:
+                    os.remove(temp_file)
+                    sys.stderr.write("Error: Downloaded file hash mismatch. Using PATH instead.\n")
+                    pesptool_cmd = "pesptool"
+            except Exception as e:
+                if isfile(temp_file):
+                    os.remove(temp_file)
+                sys.stderr.write(f"Error downloading pesptool.exe: {e}\n")
+                sys.stderr.write("Falling back to PATH. Install via: pip install git+https://github.com/Papilio-Labs/pesptool.git\n")
+                pesptool_cmd = "pesptool"
+        
+        if isfile(pesptool_exe):
+            pesptool_cmd = pesptool_exe
+    
     # Build flags list - only add --port if explicitly set
     flags = []
     upload_port = env.get("UPLOAD_PORT")
@@ -72,7 +123,7 @@ if upload_protocol == "pesptool":
     ])
     
     env.Replace(
-        UPLOADER="pesptool",
+        UPLOADER=pesptool_cmd,
         UPLOADERFLAGS=flags
     )
     upload_actions = [

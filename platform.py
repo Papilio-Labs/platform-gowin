@@ -29,6 +29,7 @@ class GowinPlatform(PlatformBase):
         board = variables.get("board")
         board_config = self.board_config(board) if board else {}
         frameworks = variables.get("pioframework", [])
+        upload_protocol = variables.get("upload_protocol", "")
         
         # Gowin toolchain is optional - user must install manually
         # or specify path via board_build.gowin_path
@@ -46,8 +47,8 @@ class GowinPlatform(PlatformBase):
         # (they use the toolchain-gowin which is already required)
         
         # Configure upload tools based on environment or board default
-        # Note: Upload tools (pesptool, openFPGALoader, Gowin Programmer) 
-        # must be installed system-wide - not available as PlatformIO packages yet
+        # pesptool is automatically downloaded on Windows when upload_protocol=pesptool
+        # Other upload tools (openFPGALoader, Gowin Programmer) must be installed system-wide
         
         return super().configure_default_packages(variables, targets)
 
