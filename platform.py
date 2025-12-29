@@ -37,21 +37,17 @@ class GowinPlatform(PlatformBase):
         if "arduino" in frameworks:
             # Dual-target board (e.g., Papilio RetroCade with ESP32 + FPGA)
             self.packages["framework-arduinoespressif32"]["optional"] = False
-            self.packages["tool-esptoolpy"]["optional"] = False
+            # ESP tools will be installed when needed
+            if "tool-esptoolpy" in self.packages:
+                self.packages["tool-esptoolpy"]["optional"] = False
             self.frameworks["arduino"]["package"] = "framework-arduinoespressif32"
         
         # HDL and Verilog frameworks don't need additional packages
         # (they use the toolchain-gowin which is already required)
         
-        # Configure upload tools based on board
-        upload_protocol = board_config.get("upload", {}).get("protocol", "")
-        
-        if upload_protocol == "pesptool":
-            self.packages["tool-pesptool"]["optional"] = False
-        elif upload_protocol == "openfpgaloader":
-            self.packages["tool-openfpgaloader"]["optional"] = False
-        elif upload_protocol == "gowin":
-            self.packages["tool-gowin-programmer"]["optional"] = False
+        # Configure upload tools based on environment or board default
+        # Note: Upload tools (pesptool, openFPGALoader, Gowin Programmer) 
+        # must be installed system-wide - not available as PlatformIO packages yet
         
         return super().configure_default_packages(variables, targets)
 

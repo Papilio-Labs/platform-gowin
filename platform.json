@@ -52,41 +52,11 @@
       "version": "~1.9.9",
       "description": "Gowin EDA Toolchain (synthesis, place & route, bitstream generation)"
     },
-    "tool-gowin-programmer": {
-      "type": "uploader",
-      "optional": true,
-      "version": "~1.9.9",
-      "description": "Gowin Programmer tool for FPGA configuration"
-    },
-    "tool-pesptool": {
-      "type": "uploader",
-      "optional": true,
-      "version": "~1.0.0",
-      "description": "pesptool - FPGA programmer via ESP32 SPI bridge"
-    },
-    "tool-openfpgaloader": {
-      "type": "uploader",
-      "optional": true,
-      "version": "~0.12.0",
-      "description": "Universal FPGA programmer (open source)"
-    },
-    "framework-verilog": {
-      "type": "framework",
-      "optional": true,
-      "version": "~1.0.0",
-      "description": "Verilog/SystemVerilog framework for FPGA development"
-    },
     "framework-arduinoespressif32": {
       "type": "framework",
       "optional": true,
       "version": "~3.0.0",
       "description": "Arduino Framework for ESP32 (for dual-target boards)"
-    },
-    "tool-esptoolpy": {
-      "type": "uploader",
-      "optional": true,
-      "version": "~1.40700.0",
-      "description": "esptool.py - ESP32 flasher tool"
     }
   },
   "packageRepositories": [

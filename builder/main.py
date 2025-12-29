@@ -37,15 +37,15 @@ else:
     # Default to hdl framework for FPGA-only boards
     env.SConscript(join(platform.get_dir(), "builder", "frameworks", "hdl.py"), exports="env")
 
-# Configure upload targets
-env.Replace(
-    UPLOADER=platform.get_package_dir("tool-gowin-programmer") or "gowin-programmer",
-    UPLOADCMD="$UPLOADER $UPLOADERFLAGS $SOURCE"
-)
-
-# Upload actions
+# Configure upload based on protocol
 upload_protocol = env.subst("$UPLOAD_PROTOCOL")
 upload_actions = []
+
+# Default uploader (will be replaced based on protocol)
+env.Replace(
+    UPLOADER="",
+    UPLOADCMD="$UPLOADER $UPLOADERFLAGS $SOURCE"
+)
 
 if upload_protocol == "pesptool":
     env.Replace(
