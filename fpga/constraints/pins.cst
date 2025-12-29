@@ -1,0 +1,136 @@
+//
+// Papilio RetroCade - Pin Constraints for GW5A-25A FPGA
+//
+// This file defines the physical pin mappings for the Gowin GW5A-25A FPGA
+// on the Tang Primer 20K module integrated into the Papilio RetroCade board.
+//
+// NOTE: These are EXAMPLE pin assignments. You MUST verify and update these
+// based on your actual Papilio RetroCade hardware schematic.
+//
+// Package: MG121NES (121-pin QFN)
+// Device: GW5A-LV25MG121NES
+//
+
+// =============================================================================
+// System Clock and Reset
+// =============================================================================
+
+// System clock input (27 MHz oscillator on Tang Primer 20K)
+IO_LOC "clk" H11;
+IO_PORT "clk" IO_TYPE=LVCMOS33 PULL_MODE=UP;
+
+// System reset (active low)
+IO_LOC "rst_n" F11;
+IO_PORT "rst_n" IO_TYPE=LVCMOS33 PULL_MODE=UP;
+
+// =============================================================================
+// LED Outputs
+// =============================================================================
+
+// On-board LEDs (Tang Primer 20K has 6 LEDs)
+IO_LOC "led[0]" E11;
+IO_PORT "led[0]" IO_TYPE=LVCMOS33 PULL_MODE=UP DRIVE=8;
+
+IO_LOC "led[1]" D11;
+IO_PORT "led[1]" IO_TYPE=LVCMOS33 PULL_MODE=UP DRIVE=8;
+
+IO_LOC "led[2]" C11;
+IO_PORT "led[2]" IO_TYPE=LVCMOS33 PULL_MODE=UP DRIVE=8;
+
+IO_LOC "led[3]" B11;
+IO_PORT "led[3]" IO_TYPE=LVCMOS33 PULL_MODE=UP DRIVE=8;
+
+IO_LOC "led[4]" A11;
+IO_PORT "led[4]" IO_TYPE=LVCMOS33 PULL_MODE=UP DRIVE=8;
+
+IO_LOC "led[5]" A10;
+IO_PORT "led[5]" IO_TYPE=LVCMOS33 PULL_MODE=UP DRIVE=8;
+
+// =============================================================================
+// SPI Interface to ESP32-S3
+// =============================================================================
+
+// SPI Slave interface (connected to ESP32-S3)
+// These pins should match the ESP32-S3 SPI master configuration
+
+// SPI Clock (input from ESP32)
+IO_LOC "spi_clk" G10;
+IO_PORT "spi_clk" IO_TYPE=LVCMOS33 PULL_MODE=UP;
+
+// SPI MOSI (Master Out Slave In - input to FPGA)
+IO_LOC "spi_mosi" H10;
+IO_PORT "spi_mosi" IO_TYPE=LVCMOS33 PULL_MODE=UP;
+
+// SPI MISO (Master In Slave Out - output from FPGA)
+IO_LOC "spi_miso" J10;
+IO_PORT "spi_miso" IO_TYPE=LVCMOS33 PULL_MODE=UP DRIVE=8;
+
+// SPI Chip Select (active low, input from ESP32)
+IO_LOC "spi_cs_n" K10;
+IO_PORT "spi_cs_n" IO_TYPE=LVCMOS33 PULL_MODE=UP;
+
+// =============================================================================
+// General Purpose I/O
+// =============================================================================
+
+// Additional GPIO pins (example - adjust based on your design)
+IO_LOC "gpio_out[0]" L10;
+IO_PORT "gpio_out[0]" IO_TYPE=LVCMOS33 PULL_MODE=UP DRIVE=8;
+
+IO_LOC "gpio_out[1]" M10;
+IO_PORT "gpio_out[1]" IO_TYPE=LVCMOS33 PULL_MODE=UP DRIVE=8;
+
+IO_LOC "gpio_out[2]" L9;
+IO_PORT "gpio_out[2]" IO_TYPE=LVCMOS33 PULL_MODE=UP DRIVE=8;
+
+IO_LOC "gpio_out[3]" M9;
+IO_PORT "gpio_out[3]" IO_TYPE=LVCMOS33 PULL_MODE=UP DRIVE=8;
+
+IO_LOC "gpio_out[4]" K9;
+IO_PORT "gpio_out[4]" IO_TYPE=LVCMOS33 PULL_MODE=UP DRIVE=8;
+
+IO_LOC "gpio_out[5]" J9;
+IO_PORT "gpio_out[5]" IO_TYPE=LVCMOS33 PULL_MODE=UP DRIVE=8;
+
+IO_LOC "gpio_out[6]" H9;
+IO_PORT "gpio_out[6]" IO_TYPE=LVCMOS33 PULL_MODE=UP DRIVE=8;
+
+IO_LOC "gpio_out[7]" G9;
+IO_PORT "gpio_out[7]" IO_TYPE=LVCMOS33 PULL_MODE=UP DRIVE=8;
+
+// =============================================================================
+// Configuration Notes
+// =============================================================================
+//
+// IO_TYPE options:
+//   - LVCMOS33: 3.3V CMOS logic levels
+//   - LVCMOS25: 2.5V CMOS logic levels
+//   - LVCMOS18: 1.8V CMOS logic levels
+//
+// PULL_MODE options:
+//   - UP: Pull-up resistor enabled
+//   - DOWN: Pull-down resistor enabled
+//   - NONE: No pull resistor
+//
+// DRIVE options (output drive strength in mA):
+//   - 4, 8, 16, 24
+//
+// =============================================================================
+// IMPORTANT: Verify Pin Assignments!
+// =============================================================================
+//
+// The pin assignments in this file are EXAMPLES and may not match your actual
+// Papilio RetroCade hardware. You MUST:
+//
+// 1. Obtain the Papilio RetroCade schematic or hardware documentation
+// 2. Verify the actual pin connections between ESP32-S3 and FPGA
+// 3. Update the IO_LOC assignments to match your hardware
+// 4. Verify voltage levels (IO_TYPE) match your board design
+// 5. Test with a simple design before deploying complex logic
+//
+// Incorrect pin assignments can cause:
+// - Non-functional design
+// - Electrical damage to the FPGA or ESP32
+// - Signal integrity issues
+//
+// =============================================================================

@@ -1,0 +1,26 @@
+# Build outputs
+.pio/
+.vscode/
+*.pyc
+__pycache__/
+
+# FPGA build outputs
+fpga/impl/
+fpga/*.rpt
+fpga/*.log
+fpga/*.gprj.user
+
+# Editor files
+.DS_Store
+*.swp
+*.swo
+*~
+.idea/
+
+# Python virtual environment
+venv/
+env/
+
+# Backup files
+*.bak
+*.orig

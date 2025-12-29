@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE gowin-fpga-project>
+<Project>
+    <Template>FPGA</Template>
+    <Version>5</Version>
+    <Device name="GW5A-25A" pn="GW5A-LV25MG121NES">gw5a25a-002</Device>
+    <FileList>
+        <!-- Source files will be automatically added by build_fpga.py script -->
+        <!-- You can manually add IP cores and other files here -->
+        <!-- They will be preserved when the script updates the file list -->
+    </FileList>
+    <OptionInfo>
+        <TopModule name="top"></TopModule>
+        <Gowin>
+            <GowinSynthesis>
+                <Goal>Speed</Goal>
+                <AreaDriven>false</AreaDriven>
+                <Verilog2001>true</Verilog2001>
+                <Verilog2005>true</Verilog2005>
+                <SystemVerilog2005>false</SystemVerilog2005>
+                <SystemVerilog2009>false</SystemVerilog2009>
+                <SystemVerilog2012>false</SystemVerilog2012>
+                <SystemVerilog2017>true</SystemVerilog2017>
+                <DspBalance>true</DspBalance>
+                <RamBalance>true</RamBalance>
+                <RAMStyle>Auto</RAMStyle>
+                <DspStyle>Auto</DspStyle>
+                <RamRW>Auto</RamRW>
+                <RamParity>false</RamParity>
+                <BRAMMode>true</BRAMMode>
+                <ClockConversion>true</ClockConversion>
+                <IOInsertion>true</IOInsertion>
+                <ResourceSharing>true</ResourceSharing>
+                <LogicLevelSharing>true</LogicLevelSharing>
+                <DuplicateLogic>true</DuplicateLogic>
+                <AddRegs>false</AddRegs>
+                <RemoveRegs>false</RemoveRegs>
+                <UpdateTiming>true</UpdateTiming>
+                <TimingDrivenSynthesis>true</TimingDrivenSynthesis>
+                <Frequency>Auto</Frequency>
+            </GowinSynthesis>
+            <GowinPlace>
+                <Effort>Auto</Effort>
+            </GowinPlace>
+            <GowinRoute>
+                <Effort>Auto</Effort>
+            </GowinRoute>
+            <GowinPower>
+                <PowerOptimization>false</PowerOptimization>
+            </GowinPower>
+            <GowinTiming>
+                <TimingAnalysis>true</TimingAnalysis>
+            </GowinTiming>
+            <GowinBitstream>
+                <BitstreamMode>Regular</BitstreamMode>
+                <SecureMode>false</SecureMode>
+                <CompressionMode>false</CompressionMode>
+                <ReadMode>Dual</ReadMode>
+                <SecurityBit>false</SecurityBit>
+                <Format>Binary</Format>
+            </GowinBitstream>
+        </Gowin>
+    </OptionInfo>
+    <Impl>
+        <FPGADevice>
+            <DeviceName>GW5A-25A</DeviceName>
+            <PackageName>MG121NES</PackageName>
+            <SpeedGrade>-2</SpeedGrade>
+        </FPGADevice>
+        <Constraint>
+            <ConstraintVersion>2.0</ConstraintVersion>
+        </Constraint>
+        <FloorPlan></FloorPlan>
+        <ClockConversion>
+            <Frequency>Auto</Frequency>
+        </ClockConversion>
+    </Impl>
+</Project>
