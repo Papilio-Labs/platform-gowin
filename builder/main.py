@@ -20,14 +20,27 @@ frameworks = env.get("PIOFRAMEWORK", [])
 
 if "arduino" in frameworks:
     # Dual-target build: Arduino (ESP32) + FPGA
-    # First build the ESP32 firmware using Arduino framework
-    env.SConscript(
-        join(platform.get_package_dir("framework-arduinoespressif32"), "tools", "platformio-build.py")
-    )
+    # Need to use espressif32 platform for Arduino ESP32 support
+    # Load the platform's main build script which will set up the ESP32 environment
+    try:
+        esp32_platform = platform.get_package_dir("platformio/espressif32")
+        if esp32_platform:
+            env.SConscript(join(esp32_platform, "builder", "main.py"))
+        else:
+            # Fallback: try loading Arduino framework directly
+            env.SConscript(
+                join(platform.get_package_dir("framework-arduinoespressif32"), "tools", "platformio-build.py")
+            )
+    except:
+        # If platform not found, try loading framework directly
+        env.SConscript(
+            join(platform.get_package_dir("framework-arduinoespressif32"), "tools", "platformio-build.py")
+        )
     
     # Then add FPGA build as post-action
     firmware = env.get("PIOMAINPROG")
-    env.AddPostAction(firmware, env.VerboseAction(env["FPGA_BUILD_ACTION"], "Building FPGA gateware..."))
+    if firmware:
+        env.AddPostAction(firmware, env.VerboseAction(env["FPGA_BUILD_ACTION"], "Building FPGA gateware..."))
     
 elif "hdl" in frameworks or "verilog" in frameworks:
     # Pure FPGA build (hdl is the new name, verilog is kept for backwards compatibility)
@@ -48,13 +61,19 @@ env.Replace(
 )
 
 if upload_protocol == "pesptool":
+    # Build flags list - only add --port if explicitly set
+    flags = []
+    upload_port = env.get("UPLOAD_PORT")
+    if upload_port:
+        flags.extend(["--port", upload_port])
+    flags.extend([
+        "write-flash",
+        "0x100000"  # FPGA flash address
+    ])
+    
     env.Replace(
         UPLOADER="pesptool",
-        UPLOADERFLAGS=[
-            "--port", "$UPLOAD_PORT",
-            "write_flash",
-            "0x100000"  # FPGA flash address
-        ]
+        UPLOADERFLAGS=flags
     )
     upload_actions = [
         env.VerboseAction("$UPLOADCMD", "Uploading FPGA bitstream via pesptool...")

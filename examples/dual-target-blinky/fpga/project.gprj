@@ -1,16 +1,15 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE gowin-fpga-project>
+<?xml version='1.0' encoding='utf-8'?>
 <Project>
     <Template>FPGA</Template>
     <Version>5</Version>
-    <Device name="GW5A-25A" pn="GW5A-LV25MG121NES">gw5a25a-002</Device>
+    <Device name="GW2A-18" pn="GW2A-LV18PG256C8/I7">gw2a18c-011</Device>
     <FileList>
-        <!-- Source files will be automatically added by build_fpga.py script -->
-        <!-- You can manually add IP cores and other files here -->
-        <!-- They will be preserved when the script updates the file list -->
-    </FileList>
+        
+        
+        
+    <File path="src/top.v" type="file.verilog" enable="1" /><File path="constraints/pins.cst" type="file.cst" enable="1" /></FileList>
     <OptionInfo>
-        <TopModule name="top"></TopModule>
+        <TopModule name="top" />
         <Gowin>
             <GowinSynthesis>
                 <Goal>Speed</Goal>
@@ -70,7 +69,7 @@
         <Constraint>
             <ConstraintVersion>2.0</ConstraintVersion>
         </Constraint>
-        <FloorPlan></FloorPlan>
+        <FloorPlan />
         <ClockConversion>
             <Frequency>Auto</Frequency>
         </ClockConversion>

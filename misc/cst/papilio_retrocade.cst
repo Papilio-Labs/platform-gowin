@@ -1,7 +1,6 @@
 //==============================================================================
 // Papilio RetroCade - Complete Pin Constraints
-// Gowin GW2AR-18 FPGA (GW2AR-LV18QN88C8/I7)
-// Package: QN88C (88-pin QFN)
+// Gowin GW2A-LV18PG256C8/I7 (256-pin BGA package)
 //
 // This file contains ALL pin mappings for the Papilio RetroCade board.
 // Copy sections as needed for your specific design.
