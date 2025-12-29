@@ -1,0 +1,35 @@
+//
+// Pin Constraints for FPGA Blinky Example
+//
+// Target: Gowin GW5A-25A on Tang Primer 20K
+// Package: MG121NES (121-pin QFN)
+//
+// NOTE: These are EXAMPLE pin assignments. Verify with your hardware schematic!
+//
+
+// System clock input (27 MHz oscillator)
+IO_LOC "clk" H11;
+IO_PORT "clk" IO_TYPE=LVCMOS33 PULL_MODE=UP;
+
+// System reset (active low)
+IO_LOC "rst_n" F11;
+IO_PORT "rst_n" IO_TYPE=LVCMOS33 PULL_MODE=UP;
+
+// LED outputs (Tang Primer 20K has 6 LEDs)
+IO_LOC "led[0]" E11;
+IO_PORT "led[0]" IO_TYPE=LVCMOS33 PULL_MODE=UP DRIVE=8;
+
+IO_LOC "led[1]" D11;
+IO_PORT "led[1]" IO_TYPE=LVCMOS33 PULL_MODE=UP DRIVE=8;
+
+IO_LOC "led[2]" C11;
+IO_PORT "led[2]" IO_TYPE=LVCMOS33 PULL_MODE=UP DRIVE=8;
+
+IO_LOC "led[3]" B11;
+IO_PORT "led[3]" IO_TYPE=LVCMOS33 PULL_MODE=UP DRIVE=8;
+
+IO_LOC "led[4]" A11;
+IO_PORT "led[4]" IO_TYPE=LVCMOS33 PULL_MODE=UP DRIVE=8;
+
+IO_LOC "led[5]" A10;
+IO_PORT "led[5]" IO_TYPE=LVCMOS33 PULL_MODE=UP DRIVE=8;

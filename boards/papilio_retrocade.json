@@ -1,0 +1,46 @@
+{
+  "build": {
+    "core": "esp32",
+    "extra_flags": "-DARDUINO_ESP32S3_DEV -DARDUINO_RUNNING_CORE=1 -DARDUINO_EVENT_RUNNING_CORE=1",
+    "f_cpu": "240000000L",
+    "f_flash": "80000000L",
+    "flash_mode": "qio",
+    "hwids": [
+      ["0x303A", "0x1001"]
+    ],
+    "mcu": "esp32s3",
+    "variant": "esp32s3",
+    "arduino": {
+      "ldscript": "esp32s3_out.ld",
+      "memory_type": "qio_qspi"
+    },
+    "psram_type": "qio",
+    "partitions": "default.csv",
+    "filesystem": "littlefs",
+    "device": "GW5A-25A",
+    "fpga_family": "GW5A",
+    "fpga_package": "MG121NES",
+    "fpga_speed": "-2",
+    "fpga_project": "fpga/project.gprj",
+    "fpga_top_module": "top",
+    "fpga_device_full": "GW5A-LV25MG121NES"
+  },
+  "connectivity": ["wifi", "bluetooth", "ethernet"],
+  "debug": {
+    "openocd_target": "esp32s3.cfg",
+    "openocd_extra_args": ["-c", "adapter speed 5000"]
+  },
+  "frameworks": ["arduino", "verilog"],
+  "name": "Papilio RetroCade",
+  "upload": {
+    "flash_size": "4MB",
+    "maximum_ram_size": 524288,
+    "maximum_size": 4194304,
+    "require_upload_port": true,
+    "speed": 921600,
+    "protocol": "esptool",
+    "protocols": ["esptool", "esp-prog", "espota", "pesptool", "openfpgaloader"]
+  },
+  "url": "https://github.com/Papilio-Labs/papilio_retrocade_hardware",
+  "vendor": "Papilio"
+}

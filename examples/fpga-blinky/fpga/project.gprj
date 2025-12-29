@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE gowin-fpga-project>
+<Project>
+    <Template>FPGA</Template>
+    <Version>5</Version>
+    <Device name="GW5A-25A" pn="GW5A-LV25MG121NES">gw5a25a-002</Device>
+    <FileList>
+        <!-- Source files will be automatically added by the build system -->
+    </FileList>
+    <OptionInfo>
+        <TopModule name="blinky"></TopModule>
+        <Gowin>
+            <GowinSynthesis>
+                <Goal>Speed</Goal>
+                <AreaDriven>false</AreaDriven>
+                <Verilog2001>true</Verilog2001>
+                <Verilog2005>true</Verilog2005>
+                <SystemVerilog2017>true</SystemVerilog2017>
+                <DspBalance>true</DspBalance>
+                <RamBalance>true</RamBalance>
+                <RAMStyle>Auto</RAMStyle>
+                <DspStyle>Auto</DspStyle>
+                <ResourceSharing>true</ResourceSharing>
+                <TimingDrivenSynthesis>true</TimingDrivenSynthesis>
+                <Frequency>Auto</Frequency>
+            </GowinSynthesis>
+            <GowinPlace>
+                <Effort>Auto</Effort>
+            </GowinPlace>
+            <GowinRoute>
+                <Effort>Auto</Effort>
+            </GowinRoute>
+            <GowinTiming>
+                <TimingAnalysis>true</TimingAnalysis>
+            </GowinTiming>
+            <GowinBitstream>
+                <BitstreamMode>Regular</BitstreamMode>
+                <Format>Binary</Format>
+            </GowinBitstream>
+        </Gowin>
+    </OptionInfo>
+    <Impl>
+        <FPGADevice>
+            <DeviceName>GW5A-25A</DeviceName>
+            <PackageName>MG121NES</PackageName>
+            <SpeedGrade>-2</SpeedGrade>
+        </FPGADevice>
+    </Impl>
+</Project>
