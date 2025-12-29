@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Module name="blink_led" T_Register="23(0)" T_Lut="54(0)">
+ <SubModule name="ws2812b_inst" Register="23" Lut="54" T_Register="23(23)" T_Lut="54(54)"/>
+</Module>

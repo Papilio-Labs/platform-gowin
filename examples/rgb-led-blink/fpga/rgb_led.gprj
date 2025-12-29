@@ -1,17 +1,16 @@
-<?xml version="1" encoding="UTF-8"?>
-<!DOCTYPE gowin-fpga-project>
+<?xml version='1.0' encoding='utf-8'?>
 <Project>
     <Template>FPGA</Template>
     <Version>5</Version>
     <Device name="GW2A-18C" pn="GW2A-LV18PG256C8/I7">gw2a18c-011</Device>
     <FileList>
-        <!-- Source files will be auto-populated by PlatformIO builder -->
-    </FileList>
+        
+    <File path="src/blink_led.v" type="file.verilog" enable="1" /><File path="src/ws2812b.v" type="file.verilog" enable="1" /><File path="constraints/pins.cst" type="file.cst" enable="1" /></FileList>
     <OptionInfo>
-        <Option name="top_module" value="blink_led"/>
-        <Option name="use_mspi_as_gpio" value="1"/>
-        <Option name="use_sspi_as_gpio" value="1"/>
-        <Option name="use_ready_as_gpio" value="1"/>
-        <Option name="use_done_as_gpio" value="1"/>
+        <Option name="top_module" value="blink_led" />
+        <Option name="use_mspi_as_gpio" value="1" />
+        <Option name="use_sspi_as_gpio" value="1" />
+        <Option name="use_ready_as_gpio" value="1" />
+        <Option name="use_done_as_gpio" value="1" />
     </OptionInfo>
 </Project>

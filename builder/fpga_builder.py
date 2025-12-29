@@ -19,10 +19,13 @@ def find_gowin_toolchain(env):
     if gowin_home and os.path.exists(gowin_home):
         return Path(gowin_home)
     
-    # Check board config
-    gowin_path = env.BoardConfig().get("build.gowin_path")
-    if gowin_path and os.path.exists(gowin_path):
-        return Path(gowin_path)
+    # Check board config (may not exist)
+    try:
+        gowin_path = env.BoardConfig().get("build.gowin_path")
+        if gowin_path and os.path.exists(gowin_path):
+            return Path(gowin_path)
+    except KeyError:
+        pass
     
     # Check common installation paths
     common_paths = [
@@ -195,8 +198,6 @@ run syn
 # Run place and route
 run pnr
 
-# Generate bitstream
-run bit
 
 # Close project
 exit
