@@ -38,9 +38,29 @@ class GowinPlatform(PlatformBase):
         if "arduino" in frameworks:
             # Dual-target board (e.g., Papilio RetroCade with ESP32 + FPGA)
             self.packages["framework-arduinoespressif32"]["optional"] = False
+
+            # Enable ESP32 toolchains based on MCU type
+            mcu = board_config.get("build.mcu", "").lower()
+            if "esp32s3" in mcu or "esp32s2" in mcu:
+                # ESP32-S3 and ESP32-S2 use Xtensa architecture
+                if "toolchain-xtensa-esp32s3" in self.packages:
+                    self.packages["toolchain-xtensa-esp32s3"]["optional"] = False
+            elif "esp32c" in mcu or "esp32h" in mcu:
+                # ESP32-C and ESP32-H series use RISC-V architecture
+                if "toolchain-riscv32-esp" in self.packages:
+                    self.packages["toolchain-riscv32-esp"]["optional"] = False
+            else:
+                # Default ESP32 (classic) uses Xtensa, but may need different toolchain
+                # For now, enable S3 toolchain as it's backward compatible
+                if "toolchain-xtensa-esp32s3" in self.packages:
+                    self.packages["toolchain-xtensa-esp32s3"]["optional"] = False
+
             # ESP tools will be installed when needed
             if "tool-esptoolpy" in self.packages:
                 self.packages["tool-esptoolpy"]["optional"] = False
+            if "tool-openocd-esp32" in self.packages:
+                self.packages["tool-openocd-esp32"]["optional"] = False
+
             self.frameworks["arduino"]["package"] = "framework-arduinoespressif32"
         
         # HDL and Verilog frameworks don't need additional packages

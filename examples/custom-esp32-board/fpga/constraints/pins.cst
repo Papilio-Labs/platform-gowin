@@ -1,0 +1,24 @@
+//Copyright (C)2014-2024 Gowin Semiconductor Corporation.
+//All rights reserved.
+//File Title: Physical Constraints file
+//Tool Version: V1.9.11.03
+//Part Number: GW2A-LV18PG256C8/I7
+//Device: GW2A-18
+//Device Version: C
+//Created Time: Mon 01 01 00:00:01 2024
+
+// System clock - 27 MHz
+IO_LOC "clk" 4;
+IO_PORT "clk" IO_TYPE=LVCMOS33 PULL_MODE=UP;
+
+// Reset (active low)
+IO_LOC "rst_n" 88;
+IO_PORT "rst_n" IO_TYPE=LVCMOS33 PULL_MODE=UP;
+
+// RGB LED
+IO_LOC "led_rgb[0]" 86;  // Red
+IO_LOC "led_rgb[1]" 85;  // Green
+IO_LOC "led_rgb[2]" 84;  // Blue
+IO_PORT "led_rgb[0]" IO_TYPE=LVCMOS33;
+IO_PORT "led_rgb[1]" IO_TYPE=LVCMOS33;
+IO_PORT "led_rgb[2]" IO_TYPE=LVCMOS33;

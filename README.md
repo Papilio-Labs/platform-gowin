@@ -11,11 +11,13 @@ PlatformIO platform for Gowin FPGA development. Supports pure FPGA projects (Ver
 
 ## Supported Boards
 
-- **Papilio RetroCade** (ESP32-S3 + GW5A-25A) - Dual-target
+- **Papilio RetroCade** (ESP32-S3 + GW2A-18) - Dual-target with combined board definition
+- **Papilio RetroCade FPGA** - FPGA-only configuration
 - Tang Nano 9K
 - Tang Nano 20K
 - Sipeed boards (coming soon)
 - Generic Gowin development boards
+- **Custom ESP32 boards** - Define your own ESP32+FPGA boards
 
 ## Features
 
@@ -25,6 +27,8 @@ PlatformIO platform for Gowin FPGA development. Supports pure FPGA projects (Ver
 ✅ Multiple upload protocols (pesptool, openFPGALoader, Gowin Programmer)
 ✅ Pure FPGA projects with `framework = hdl` (or `framework = verilog`)
 ✅ Dual-target projects (MCU + FPGA) with `framework = arduino`
+✅ Custom ESP32 board support (ESP32, ESP32-S2, ESP32-S3, ESP32-C3, ESP32-C6, ESP32-H2)
+✅ Automatic toolchain selection for ESP32 variants (Xtensa/RISC-V)
 ✅ Integrated with PlatformIO ecosystem
 
 ## Installation
@@ -131,6 +135,73 @@ my_project/
     └── constraints/
         └── pins.cst
 ```
+
+### Custom ESP32 Boards
+
+The platform now supports custom ESP32 boards directly without needing to reference the `espressif32` platform separately. You can define your own ESP32+FPGA board in a single board definition file.
+
+#### Creating a Custom Board Definition
+
+Create a board JSON file in `boards/your_board.json`:
+
+```json
+{
+  "build": {
+    "core": "esp32",
+    "mcu": "esp32s3",
+    "f_cpu": "240000000L",
+    "f_flash": "80000000L",
+    "flash_mode": "qio",
+    "variant": "XIAO_ESP32S3",
+    "device": "GW2A-18",
+    "fpga_family": "GW2A",
+    "fpga_project": "fpga/project.gprj"
+  },
+  "frameworks": ["arduino", "hdl"],
+  "upload": {
+    "protocol": "esptool",
+    "protocols": ["esptool", "pesptool"]
+  }
+}
+```
+
+#### Using Your Custom Board
+
+```ini
+[env:my_custom_board]
+platform = gowin
+board = your_board      ; References boards/your_board.json
+framework = arduino
+
+; ESP32 configuration
+board_build.flash_mode = qio
+board_build.psram_type = qio
+
+; FPGA configuration
+board_build.fpga_project = fpga/project.gprj
+board_build.gowin_path = C:/Gowin/Gowin_V1.9.11.03_Education_x64
+```
+
+#### Supported ESP32 Variants
+
+The platform automatically configures the correct toolchain based on your MCU type:
+
+- **ESP32** (classic) - Xtensa architecture
+- **ESP32-S2** - Xtensa architecture
+- **ESP32-S3** - Xtensa architecture
+- **ESP32-C3** - RISC-V architecture
+- **ESP32-C6** - RISC-V architecture
+- **ESP32-H2** - RISC-V architecture
+
+#### Key Features
+
+✅ Single `platform = gowin` for both ESP32 and FPGA
+✅ Automatic toolchain selection based on MCU type
+✅ No need for separate espressif32 platform reference
+✅ Support for all ESP32 variants
+✅ Unified build workflow
+
+See the [custom-esp32-board example](examples/custom-esp32-board/) for a complete working example.
 
 ## Examples
 

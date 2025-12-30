@@ -1,0 +1,51 @@
+{
+  "build": {
+    "core": "esp32",
+    "extra_flags": "-DARDUINO_XIAO_ESP32S3 -DARDUINO_USB_MODE=1",
+    "f_cpu": "240000000L",
+    "f_flash": "80000000L",
+    "flash_mode": "qio",
+    "hwids": [
+      ["0x2886", "0x0049"]
+    ],
+    "mcu": "esp32s3",
+    "variant": "XIAO_ESP32S3",
+    "partitions": "default_8MB.csv",
+    "arduino": {
+      "ldscript": "esp32s3_out.ld",
+      "memory_type": "qio_qspi"
+    },
+    "device": "GW2A-18",
+    "fpga_family": "GW2A",
+    "fpga_package": "PG256",
+    "fpga_speed": "C8/I7",
+    "fpga_project": "fpga/project.gprj",
+    "fpga_top_module": "top",
+    "fpga_device_full": "GW2A-LV18PG256C8/I7",
+    "gowin_path": "C:/Gowin/Gowin_V1.9.11.03_Education_x64"
+  },
+  "connectivity": ["wifi", "bluetooth"],
+  "debug": {
+    "openocd_target": "esp32s3.cfg"
+  },
+  "frameworks": ["arduino", "hdl", "verilog"],
+  "name": "Papilio RetroCade (ESP32-S3 + FPGA)",
+  "upload": {
+    "arduino": {
+      "flash_extra_images": [
+        ["0x0", "bootloader_qio_80m.bin"],
+        ["0x8000", "partitions.bin"],
+        ["0xe000", "boot_app0.bin"]
+      ]
+    },
+    "flash_size": "8MB",
+    "maximum_ram_size": 327680,
+    "maximum_size": 8388608,
+    "require_upload_port": true,
+    "speed": 921600,
+    "protocol": "esptool",
+    "protocols": ["esptool", "esp-builtin", "esp-bridge", "pesptool", "openfpgaloader", "gowin"]
+  },
+  "url": "https://github.com/Papilio-Labs/papilio_retrocade_hardware",
+  "vendor": "Papilio"
+}
