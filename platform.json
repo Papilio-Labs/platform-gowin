@@ -14,7 +14,9 @@
     "vhdl",
     "hdl",
     "tang",
-    "sipeed"
+    "sipeed",
+    "esp32",
+    "dual-target"
   ],
   "engines": {
     "platformio": "^6.0.0"
@@ -57,6 +59,30 @@
       "optional": true,
       "version": "*",
       "description": "Arduino Framework for ESP32 (for dual-target boards)"
+    },
+    "tool-esptoolpy": {
+      "type": "uploader",
+      "optional": true,
+      "version": "~1.40800.0",
+      "description": "ESP32 firmware upload tool"
+    },
+    "toolchain-xtensa-esp32s3": {
+      "type": "toolchain",
+      "optional": true,
+      "version": "~13.2.0",
+      "description": "GCC toolchain for ESP32-S3"
+    },
+    "toolchain-riscv32-esp": {
+      "type": "toolchain",
+      "optional": true,
+      "version": "~13.2.0",
+      "description": "GCC toolchain for ESP32 RISC-V variants"
+    },
+    "tool-openocd-esp32": {
+      "type": "debugger",
+      "optional": true,
+      "version": "~2.1100.0",
+      "description": "OpenOCD debugging tool for ESP32"
     }
   },
   "packageRepositories": [

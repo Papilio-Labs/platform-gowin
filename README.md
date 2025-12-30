@@ -11,7 +11,14 @@ PlatformIO platform for Gowin FPGA development. Supports pure FPGA projects (Ver
 
 ## Supported Boards
 
-- **Papilio RetroCade** (ESP32-S3 + GW5A-25A) - Dual-target
+### Dual-Target Boards (ESP32 + FPGA)
+- **Papilio RetroCade** (ESP32-S3 + GW2A-18) - `papilio_retrocade_esp32`
+  - Supports Arduino framework + FPGA
+  - Full SPI communication between ESP32 and FPGA
+  - Automatic dual-target builds
+
+### FPGA-Only Boards
+- **Papilio RetroCade FPGA** (GW2A-18) - `papilio_retrocade_fpga`
 - Tang Nano 9K
 - Tang Nano 20K
 - Sipeed boards (coming soon)
@@ -103,7 +110,7 @@ my_project/
         └── pins.cst       # Pin constraints
 ```
 
-### Dual-Target Project (MCU + FPGA)
+### Dual-Target Project (ESP32 + FPGA)
 
 ```ini
 [platformio]
@@ -111,11 +118,16 @@ default_envs = my_dual_target
 
 [env:my_dual_target]
 platform = gowin
-board = papilio_retrocade
+board = papilio_retrocade_esp32  ; ESP32-S3 + FPGA board
 framework = arduino
 
-; FPGA builds automatically after ESP32 build
+; FPGA configuration
+board_build.fpga_project = fpga/project.gprj
+board_build.fpga_top_module = top
+
+; ESP32 upload (FPGA builds automatically after ESP32 build)
 upload_protocol = esptool
+monitor_speed = 115200
 ```
 
 Project structure:
@@ -134,22 +146,50 @@ my_project/
 
 ## Examples
 
-### [FPGA Blinky](examples/fpga-blinky/)
+### Dual-Target Examples (ESP32 + FPGA)
 
-Pure FPGA project with rotating LED pattern.
+#### [ESP32-FPGA Blinky](examples/esp32-fpga-blinky/)
+
+Complete dual-target example with ESP32-S3 + Gowin FPGA.
+- ESP32 controls FPGA reset and monitors configuration
+- SPI communication between ESP32 and FPGA
+- Independent LED patterns on both targets
+- Demonstrates full Arduino + HDL integration
 
 ```bash
-cd examples/fpga-blinky
+cd examples/esp32-fpga-blinky
+pio run                    # Build both ESP32 and FPGA
+pio run -t upload         # Upload ESP32 firmware
+```
+
+#### [Dual-Target Blinky](examples/dual-target-blinky/)
+
+Advanced dual-target project with ESP32-S3 and FPGA communication via SPI.
+
+```bash
+cd examples/dual-target-blinky
 pio run
 pio run -t upload
 ```
 
-### [Papilio Blinky](examples/papilio-blinky/)
+### Pure FPGA Examples
 
-Dual-target project with ESP32-S3 and FPGA communication via SPI.
+#### [FPGA Mixed HDL](examples/fpga-mixed-hdl/)
+
+Pure FPGA project demonstrating mixed Verilog/VHDL design.
 
 ```bash
-cd examples/papilio-blinky
+cd examples/fpga-mixed-hdl
+pio run
+pio run -t upload
+```
+
+#### [WS2812B RGB LED](examples/ws2812b-rgb-led/)
+
+FPGA-based WS2812B LED controller.
+
+```bash
+cd examples/ws2812b-rgb-led
 pio run
 pio run -t upload
 ```

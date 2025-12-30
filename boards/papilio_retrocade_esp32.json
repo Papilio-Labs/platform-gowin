@@ -1,0 +1,70 @@
+{
+  "build": {
+    "core": "esp32",
+    "extra_flags": [
+      "-DARDUINO_ESP32S3_DEV",
+      "-DARDUINO_RUNNING_CORE=1",
+      "-DARDUINO_EVENT_RUNNING_CORE=1",
+      "-DBOARD_HAS_PSRAM",
+      "-DBOARD_HAS_FPGA",
+      "-DFPGA_SPI_CS=10",
+      "-DFPGA_SPI_MOSI=11",
+      "-DFPGA_SPI_MISO=13",
+      "-DFPGA_SPI_SCK=12",
+      "-DFPGA_RESET_PIN=14",
+      "-DFPGA_CDONE_PIN=21",
+      "-DFPGA_FLASH_ADDR=0x100000"
+    ],
+    "f_cpu": "240000000L",
+    "f_flash": "80000000L",
+    "flash_mode": "qio",
+    "hwids": [
+      ["0x303A", "0x1001"]
+    ],
+    "mcu": "esp32s3",
+    "variant": "esp32s3",
+    "device": "GW2A-18",
+    "fpga_family": "GW2A",
+    "fpga_package": "PG256",
+    "fpga_speed": "C8/I7",
+    "fpga_project": "fpga/project.gprj",
+    "fpga_top_module": "top",
+    "fpga_device_full": "GW2A-LV18PG256C8/I7",
+    "gowin_path": "C:/Gowin/Gowin_V1.9.11.03_Education_x64"
+  },
+  "connectivity": [
+    "wifi",
+    "bluetooth"
+  ],
+  "debug": {
+    "openocd_target": "esp32s3.cfg"
+  },
+  "frameworks": [
+    "arduino",
+    "espidf"
+  ],
+  "name": "Papilio RetroCade (ESP32-S3 + FPGA)",
+  "upload": {
+    "flash_size": "16MB",
+    "maximum_ram_size": 327680,
+    "maximum_size": 16777216,
+    "require_upload_port": true,
+    "speed": 921600,
+    "protocol": "esptool",
+    "protocols": [
+      "esptool",
+      "esp-bridge",
+      "esp-builtin",
+      "iot-bus-jtag",
+      "jlink",
+      "minimodule",
+      "olimex-arm-usb-tiny-h",
+      "olimex-arm-usb-ocd-h",
+      "olimex-arm-usb-ocd",
+      "olimex-jtag-tiny",
+      "tumpa"
+    ]
+  },
+  "url": "https://github.com/Papilio-Labs/papilio_retrocade_hardware",
+  "vendor": "Papilio"
+}
