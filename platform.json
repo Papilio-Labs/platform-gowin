@@ -1,9 +1,9 @@
 {
   "name": "gowin",
   "title": "Gowin FPGA",
-  "description": "Gowin FPGA development platform with support for Gowin Educational IDE and open-source toolchains. Supports pure FPGA projects and dual-target projects (MCU + FPGA).",
+  "description": "Gowin FPGA development platform with support for Gowin Educational IDE and open-source toolchains. Supports pure FPGA HDL projects (Verilog/SystemVerilog/VHDL).",
   "homepage": "https://www.gowinsemi.com/",
-  "license": "Apache-2.0",
+  "license": "MIT",
   "keywords": [
     "fpga",
     "gowin",
@@ -14,8 +14,7 @@
     "vhdl",
     "hdl",
     "tang",
-    "sipeed",
-    "esp32"
+    "sipeed"
   ],
   "engines": {
     "platformio": "^6.0.0"
@@ -25,28 +24,12 @@
     "url": "https://github.com/Papilio-Labs/platform-gowin.git"
   },
   "version": "1.0.0",
-  "platformio": {
-    "extends": "espressif32"
-  },
   "frameworks": {
     "hdl": {
       "script": "builder/frameworks/hdl.py",
       "description": "Pure HDL (Verilog/SystemVerilog/VHDL) FPGA development",
       "homepage": "https://www.gowinsemi.com/",
       "title": "HDL"
-    },
-    "verilog": {
-      "script": "builder/frameworks/hdl.py",
-      "description": "Alias for 'hdl' framework - supports Verilog/SystemVerilog/VHDL",
-      "homepage": "https://www.gowinsemi.com/",
-      "title": "Verilog (HDL)"
-    },
-    "arduino": {
-      "package": "framework-arduinoespressif32",
-      "script": "builder/frameworks/arduino.py",
-      "description": "Arduino Framework for dual-target boards (ESP32 + FPGA)",
-      "homepage": "https://github.com/espressif/arduino-esp32",
-      "title": "Arduino"
     }
   },
   "packages": {
@@ -55,12 +38,6 @@
       "optional": true,
       "version": "~1.9.9",
       "description": "Gowin EDA Toolchain (synthesis, place & route, bitstream generation)"
-    },
-    "framework-arduinoespressif32": {
-      "type": "framework",
-      "optional": true,
-      "version": "*",
-      "description": "Arduino Framework for ESP32 (for dual-target boards)"
     }
   },
   "packageRepositories": [

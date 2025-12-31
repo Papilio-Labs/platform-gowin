@@ -6,12 +6,11 @@
     "fpga_speed": "C8/I7",
     "fpga_project": "fpga/project.gprj",
     "fpga_top_module": "top",
-    "fpga_device_full": "GW2A-LV18PG256C8/I7",
-    "gowin_path": "C:/Gowin/Gowin_V1.9.11.03_Education_x64"
+    "fpga_device_full": "GW2A-LV18PG256C8/I7"
   },
   "connectivity": [],
   "debug": {},
-  "frameworks": ["hdl", "verilog"],
+  "frameworks": ["hdl"],
   "name": "Papilio RetroCade FPGA",
   "upload": {
     "require_upload_port": false,

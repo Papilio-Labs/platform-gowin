@@ -18,32 +18,9 @@ env.SConscript(join(platform.get_dir(), "builder", "fpga_builder.py"), exports="
 # Get framework
 frameworks = env.get("PIOFRAMEWORK", [])
 
-if "arduino" in frameworks:
-    # Dual-target build: Arduino (ESP32) + FPGA
-    # Load the espressif32 platform builder first to set up all necessary tools
-    try:
-        # Try to get espressif32 platform as a dependency
-        from platformio.platform.factory import PlatformFactory
-        esp32_platform = PlatformFactory.new("espressif32")
-        esp32_builder = join(esp32_platform.get_dir(), "builder", "main.py")
-        env.SConscript(esp32_builder)
-    except Exception as e:
-        print(f"Warning: Could not load espressif32 platform builder: {e}")
-        print("Falling back to direct framework load...")
-        # Fallback: try loading Arduino framework directly
-        env.SConscript(
-            join(platform.get_package_dir("framework-arduinoespressif32"), "tools", "platformio-build.py")
-        )
-    
-    # Then add FPGA build as post-action
-    firmware = env.get("PIOMAINPROG")
-    if firmware:
-        env.AddPostAction(firmware, env.VerboseAction(env["FPGA_BUILD_ACTION"], "Building FPGA gateware..."))
-    
-elif "hdl" in frameworks or "verilog" in frameworks:
-    # Pure FPGA build (hdl is the new name, verilog is kept for backwards compatibility)
+if "hdl" in frameworks:
+    # Pure FPGA build
     env.SConscript(join(platform.get_dir(), "builder", "frameworks", "hdl.py"), exports="env")
-    
 else:
     # Default to hdl framework for FPGA-only boards
     env.SConscript(join(platform.get_dir(), "builder", "frameworks", "hdl.py"), exports="env")
