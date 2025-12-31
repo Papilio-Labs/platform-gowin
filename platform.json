@@ -14,7 +14,8 @@
     "vhdl",
     "hdl",
     "tang",
-    "sipeed"
+    "sipeed",
+    "esp32"
   ],
   "engines": {
     "platformio": "^6.0.0"
@@ -24,6 +25,9 @@
     "url": "https://github.com/Papilio-Labs/platform-gowin.git"
   },
   "version": "1.0.0",
+  "platformio": {
+    "extends": "espressif32"
+  },
   "frameworks": {
     "hdl": {
       "script": "builder/frameworks/hdl.py",
