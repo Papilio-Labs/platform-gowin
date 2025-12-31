@@ -17,28 +17,46 @@ def find_gowin_toolchain(env):
     # Check environment variable first
     gowin_home = os.environ.get("GOWIN_HOME")
     if gowin_home and os.path.exists(gowin_home):
-        return Path(gowin_home)
+        gw_sh = find_gw_sh(Path(gowin_home))
+        if gw_sh:
+            return Path(gowin_home)
     
     # Check board config (may not exist)
     try:
         gowin_path = env.BoardConfig().get("build.gowin_path")
         if gowin_path and os.path.exists(gowin_path):
-            return Path(gowin_path)
+            gw_sh = find_gw_sh(Path(gowin_path))
+            if gw_sh:
+                return Path(gowin_path)
     except KeyError:
         pass
     
-    # Check common installation paths
+    # Check common installation paths and their subdirectories
     common_paths = [
         Path("C:/Gowin"),
-        Path("C:/Gowin_V1.9.9"),
         Path("/opt/gowin"),
         Path("/usr/local/gowin"),
         Path.home() / "Gowin",
     ]
     
-    for path in common_paths:
-        if path.exists():
-            return path
+    for base_path in common_paths:
+        if not base_path.exists():
+            continue
+            
+        # First check if gw_sh is directly in this path
+        gw_sh = find_gw_sh(base_path)
+        if gw_sh:
+            return base_path
+        
+        # Search for versioned subdirectories (e.g., Gowin_V1.9.11.03_Education_x64)
+        try:
+            for subdir in base_path.iterdir():
+                if subdir.is_dir() and subdir.name.startswith("Gowin"):
+                    gw_sh = find_gw_sh(subdir)
+                    if gw_sh:
+                        return subdir
+        except (PermissionError, OSError):
+            continue
     
     return None
 
@@ -188,16 +206,50 @@ def build_fpga_action(target, source, env):
     # Get top module name from board config
     top_module = env.BoardConfig().get("build.fpga_top_module", "top")
     
-    # Create Tcl script for gw_sh
-    tcl_script = fpga_dir / "build_script.tcl"
+    # Get dual-purpose pin configuration options
+    use_sspi_as_gpio = env.BoardConfig().get("build.use_sspi_as_gpio", "0")
+    use_mspi_as_gpio = env.BoardConfig().get("build.use_mspi_as_gpio", "0")
+    use_jtag_as_gpio = env.BoardConfig().get("build.use_jtag_as_gpio", "0")
+    use_ready_as_gpio = env.BoardConfig().get("build.use_ready_as_gpio", "0")
+    use_done_as_gpio = env.BoardConfig().get("build.use_done_as_gpio", "0")
+    
+    # Create impl directory if it doesn't exist
+    impl_dir = fpga_dir / "impl"
+    impl_dir.mkdir(exist_ok=True)
+    
+    # Create Tcl script for gw_sh in impl directory
+    tcl_script = impl_dir / "build_script.tcl"
     with open(tcl_script, 'w') as f:
         f.write(f"""# Auto-generated Tcl script for gw_sh
 # Open project
-open_project {gprj_path.name}
+open_project ../{gprj_path.name}
 
 # Set top module explicitly
 set_option -top_module {top_module}
-
+""")
+        
+        # Add dual-purpose pin configuration options if enabled
+        if use_sspi_as_gpio in ("1", "true", "True", "yes", "Yes"):
+            f.write("\n# Use SSPI pins as regular I/O\n")
+            f.write("set_option -use_sspi_as_gpio 1\n")
+        
+        if use_mspi_as_gpio in ("1", "true", "True", "yes", "Yes"):
+            f.write("\n# Use MSPI pins as regular I/O\n")
+            f.write("set_option -use_mspi_as_gpio 1\n")
+        
+        if use_jtag_as_gpio in ("1", "true", "True", "yes", "Yes"):
+            f.write("\n# Use JTAG pins as regular I/O\n")
+            f.write("set_option -use_jtag_as_gpio 1\n")
+        
+        if use_ready_as_gpio in ("1", "true", "True", "yes", "Yes"):
+            f.write("\n# Use READY pin as regular I/O\n")
+            f.write("set_option -use_ready_as_gpio 1\n")
+        
+        if use_done_as_gpio in ("1", "true", "True", "yes", "Yes"):
+            f.write("\n# Use DONE pin as regular I/O\n")
+            f.write("set_option -use_done_as_gpio 1\n")
+        
+        f.write("""
 # Run all (synthesis, place and route, bitstream generation)
 run all
 
@@ -209,7 +261,7 @@ exit
     print("Starting FPGA synthesis and place & route...")
     result = subprocess.run(
         [str(gw_sh), str(tcl_script)],
-        cwd=str(fpga_dir),
+        cwd=str(impl_dir),
         capture_output=True,
         text=True,
         timeout=600

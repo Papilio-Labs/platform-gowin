@@ -5,6 +5,8 @@ Supports Gowin FPGA devices with the Gowin EDA toolchain.
 """
 
 from platformio.public import PlatformBase
+import shutil
+from pathlib import Path
 
 
 class GowinPlatform(PlatformBase):
@@ -82,3 +84,40 @@ class GowinPlatform(PlatformBase):
             build["fpga_top_module"] = "top"
         
         return board
+
+    def run(self, variables, targets, silent, verbose, jobs):
+        """
+        Override run method to add custom clean logic for FPGA builds.
+        """
+        # If cleaning, also clean the fpga/impl directory
+        if "clean" in targets:
+            project_config = variables.get("project_config")
+            if project_config:
+                # Get project directory from the platformio.ini path
+                import os
+                import stat
+                
+                project_dir = os.path.dirname(project_config)
+                impl_path = Path(project_dir) / "fpga" / "impl"
+                if impl_path.exists():
+                    if not silent:
+                        print(f"Removing {impl_path}")
+                    
+                    # Handle permission errors on Windows for read-only files
+                    def handle_remove_readonly(func, path, exc):
+                        """Error handler for Windows read-only files"""
+                        if not os.access(path, os.W_OK):
+                            # Make the file writable and try again
+                            os.chmod(path, stat.S_IWRITE)
+                            func(path)
+                        else:
+                            raise
+                    
+                    try:
+                        shutil.rmtree(impl_path, onerror=handle_remove_readonly)
+                    except Exception as e:
+                        if not silent:
+                            print(f"Warning: Could not fully remove {impl_path}: {e}")
+        
+        # Call parent run method
+        return super().run(variables, targets, silent, verbose, jobs)

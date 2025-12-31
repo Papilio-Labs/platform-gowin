@@ -6,6 +6,7 @@ Supports mixed-language designs with both Verilog and VHDL source files.
 """
 
 from os.path import join
+from pathlib import Path
 from SCons.Script import DefaultEnvironment
 
 env = DefaultEnvironment()
@@ -37,6 +38,7 @@ fpga_bitstream = env.Command(
     None,  # No source dependency - builder will scan FPGA sources
     env["FPGA_BUILD_ACTION"]
 )
+
 
 # Create alias and set as default
 env.Alias("buildprog", fpga_bitstream)
