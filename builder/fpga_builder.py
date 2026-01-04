@@ -161,6 +161,28 @@ def update_gprj_file(gprj_path, sources, fpga_dir):
         print(f"Error updating .gprj file: {e}")
         return False
 
+def get_fpga_sources(env):
+    """Get all FPGA source files for dependency tracking."""
+    project_dir = Path(env.get("PROJECT_DIR"))
+    fpga_dir = project_dir / "fpga"
+    
+    # Get project file
+    gprj_file = env.BoardConfig().get("build.fpga_project", "fpga/project.gprj")
+    gprj_path = project_dir / gprj_file
+    
+    all_sources = []
+    
+    if gprj_path.exists():
+        all_sources.append(str(gprj_path))
+        
+        # Scan for source files
+        sources = scan_fpga_sources(fpga_dir)
+        all_sources.extend([str(f) for f in sources['verilog']])
+        all_sources.extend([str(f) for f in sources['vhdl']])
+        all_sources.extend([str(f) for f in sources['constraints']])
+    
+    return all_sources
+
 def build_fpga_action(target, source, env):
     """SCons action for building FPGA bitstream."""
     print("=" * 70)
@@ -202,6 +224,11 @@ def build_fpga_action(target, source, env):
     
     print(f"Updating project file: {gprj_path}")
     update_gprj_file(gprj_path, sources, fpga_dir)
+    
+    # Register all source files as dependencies for this build
+    all_sources = sources['verilog'] + sources['vhdl'] + sources['constraints']
+    all_sources.append(gprj_path)  # Also depend on the project file
+    env.Depends(target, all_sources)
     
     # Get top module name from board config
     top_module = env.BoardConfig().get("build.fpga_top_module", "top")
@@ -316,5 +343,6 @@ exit
     
     return 0
 
-# Register the FPGA build action with the environment
+# Register the FPGA build action and source getter with the environment
 env["FPGA_BUILD_ACTION"] = build_fpga_action
+env["GET_FPGA_SOURCES"] = get_fpga_sources

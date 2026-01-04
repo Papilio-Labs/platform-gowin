@@ -32,10 +32,13 @@ env.Append(
     ]
 )
 
+# Get FPGA source files for dependency tracking
+fpga_sources = env["GET_FPGA_SOURCES"](env)
+
 # Build the FPGA bitstream using the FPGA build action
 fpga_bitstream = env.Command(
     join("$BUILD_DIR", "$PROGNAME$PROGSUFFIX"),
-    None,  # No source dependency - builder will scan FPGA sources
+    fpga_sources,  # Track FPGA sources as dependencies
     env["FPGA_BUILD_ACTION"]
 )
 
