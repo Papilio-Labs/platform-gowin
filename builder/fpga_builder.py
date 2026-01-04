@@ -228,7 +228,9 @@ def build_fpga_action(target, source, env):
     # Register all source files as dependencies for this build
     all_sources = sources['verilog'] + sources['vhdl'] + sources['constraints']
     all_sources.append(gprj_path)  # Also depend on the project file
-    env.Depends(target, all_sources)
+    # Convert Path objects to strings for SCons
+    all_sources_str = [str(s) for s in all_sources]
+    env.Depends(target, all_sources_str)
     
     # Get top module name from board config
     top_module = env.BoardConfig().get("build.fpga_top_module", "top")
