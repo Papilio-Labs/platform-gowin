@@ -291,7 +291,7 @@ set_option -top_module {top_module}
                 addr = spi_flash_address.strip()
                 if not addr.startswith("0x") and not addr.startswith("0X"):
                     addr = "0x" + addr
-                f.write(f"set_option -spi_flash_address {addr}\n")
+                f.write(f"set_option -spi_flash_addr {addr}\n")
         
         f.write("""
 # Run all (synthesis, place and route, bitstream generation)
