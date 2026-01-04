@@ -213,6 +213,10 @@ def build_fpga_action(target, source, env):
     use_ready_as_gpio = env.BoardConfig().get("build.use_ready_as_gpio", "0")
     use_done_as_gpio = env.BoardConfig().get("build.use_done_as_gpio", "0")
     
+    # Get multi-boot configuration options
+    multi_boot = env.BoardConfig().get("build.multi_boot", "0")
+    spi_flash_address = env.BoardConfig().get("build.spi_flash_address", "")
+    
     # Create impl directory if it doesn't exist
     impl_dir = fpga_dir / "impl"
     impl_dir.mkdir(exist_ok=True)
@@ -248,6 +252,19 @@ set_option -top_module {top_module}
         if use_done_as_gpio in ("1", "true", "True", "yes", "Yes"):
             f.write("\n# Use DONE pin as regular I/O\n")
             f.write("set_option -use_done_as_gpio 1\n")
+        
+        # Add multi-boot configuration if enabled
+        if multi_boot in ("1", "true", "True", "yes", "Yes"):
+            f.write("\n# Enable Multi Boot\n")
+            f.write("set_option -multi_boot 1\n")
+            
+            # Set SPI flash address if provided
+            if spi_flash_address:
+                # Ensure address has 0x prefix if it's a hex value
+                addr = spi_flash_address.strip()
+                if not addr.startswith("0x") and not addr.startswith("0X"):
+                    addr = "0x" + addr
+                f.write(f"set_option -spi_flash_address {addr}\n")
         
         f.write("""
 # Run all (synthesis, place and route, bitstream generation)
