@@ -337,6 +337,8 @@ exit
     build_dir = Path(env.subst("$BUILD_DIR"))
     dest = build_dir / "fpga_bitstream.bin"
     shutil.copy2(bitstream, dest)
+    # Ensure the copied file is writable (remove read-only attribute)
+    os.chmod(dest, 0o666)
     print(f"✓ Bitstream copied to {dest}")
     
     print("=" * 70)
