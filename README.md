@@ -186,6 +186,172 @@ upload_protocol = pesptool  ; or openfpgaloader, gowin, esptool
 The build system manages HDL source files (`.v`, `.sv`, `.vhd`, `.vhdl`) and constraints (`.cst`). 
 All IP cores and custom project settings are preserved.
 
+## Automatic Library Integration
+
+The FPGA builder automatically discovers and integrates gateware from PlatformIO libraries. When you add Papilio libraries to your project dependencies, their FPGA modules and constraint files are automatically included in your build.
+
+### How It Works
+
+1. **Add library dependency** to `platformio.ini`:
+   ```ini
+   [env:myenv]
+   lib_deps = 
+       papilio_wishbone_bus
+       papilio_wb_register
+       papilio_wishbone_rgb_led
+   ```
+
+2. **Build automatically integrates gateware:**
+   - Discovers `.v`/`.sv`/`.vhd` files in `library/gateware/`
+   - Adds constraint files from `library/gateware/constraints/<board_name>.cst`
+   - Includes modules in FPGA build without manual project file editing
+
+3. **Use modules in your top-level design:**
+   ```verilog
+   module top (
+       input wire clk,
+       // ... pins ...
+   );
+   
+   // Wishbone bus from library
+   pwb_spi_wb_bridge wb_bridge (
+       .clk(clk),
+       // ... connections ...
+   );
+   
+   // Register block from library
+   wb_register_block regs (
+       .wb_clk_i(clk),
+       // ... connections ...
+   );
+   
+   endmodule
+   ```
+
+### Library Gateware Structure
+
+Papilio libraries follow this structure for automatic integration:
+
+```
+papilio_<library_name>/
+├── library.json              # PlatformIO metadata with papilio section
+├── src/                      # ESP32 firmware API
+│   ├── Papilio<Name>.h
+│   └── Papilio<Name>.cpp
+└── gateware/                 # FPGA modules (auto-discovered)
+    ├── module.v
+    └── constraints/
+        ├── papilio_retrocade.cst
+        └── papilio_synth.cst
+```
+
+The `library.json` includes a `papilio` section documenting the gateware:
+
+```json
+{
+  "name": "papilio_wishbone_bus",
+  "papilio": {
+    "gateware": {
+      "modules": [
+        {
+          "name": "pwb_spi_wb_bridge",
+          "file": "gateware/pwb_spi_wb_bridge.v",
+          "description": "SPI to Wishbone bridge"
+        }
+      ]
+    }
+  }
+}
+```
+
+### Board-Specific Constraints
+
+Libraries provide constraint files per supported board:
+
+- `gateware/constraints/papilio_retrocade.cst` - Papilio RetroCade pins
+- `gateware/constraints/papilio_synth.cst` - Papilio Synth pins
+
+The builder automatically selects the correct file based on your board configuration. Library constraints are included **after** project constraints, allowing you to override library defaults if needed.
+
+### Constraint File Priority
+
+Constraints are processed in this order:
+
+1. Project constraints: `fpga/constraints/*.cst`
+2. Library constraints: `<library>/gateware/constraints/<board>.cst` (in dependency order)
+
+Later constraints override earlier ones for the same signal.
+
+### Example: Using Wishbone Libraries
+
+```ini
+[env:esp32]
+platform = gowin
+board = papilio_retrocade
+framework = arduino
+
+lib_deps = 
+    papilio_wishbone_bus       ; SPI-Wishbone bridge + utilities
+    papilio_wb_register        ; Register block with CLI
+    papilio_wb_bram           ; Block RAM with burst support
+    papilio_wishbone_rgb_led   ; WS2812B LED controller
+```
+
+Your FPGA build automatically includes:
+- `pwb_spi_wb_bridge.v` - SPI to Wishbone bridge
+- `wb_register_block.v` - 8-register block  
+- `wb_bram.v` - Configurable block RAM
+- `fifo_sync.v` - FIFO for burst transfers
+- `ws2812b_driver.v` - RGB LED controller
+- Pin constraints for all modules
+
+**Build output shows discovery:**
+```
+Building FPGA Gateware...
+Found 5 Verilog, 0 VHDL, 3 constraint files
+Library gateware discovered:
+  - libs/papilio_wishbone_bus/gateware/*.v (3 files)
+  - libs/papilio_wb_bram/gateware/*.v (2 files)
+  - libs/papilio_wishbone_rgb_led/gateware/*.v (2 files)
+```
+
+### Creating Library Gateware
+
+To make your library auto-discoverable:
+
+1. **Create gateware directory:**
+   ```
+   my_library/
+   ├── library.json
+   ├── src/              # ESP32 code
+   └── gateware/         # FPGA modules
+       ├── my_module.v
+       └── constraints/
+           └── papilio_retrocade.cst
+   ```
+
+2. **Document in library.json:**
+   ```json
+   {
+     "name": "my_library",
+     "papilio": {
+       "gateware": {
+         "modules": [
+           {
+             "name": "my_module",
+             "file": "gateware/my_module.v",
+             "description": "Module description"
+           }
+         ]
+       }
+     }
+   }
+   ```
+
+3. **Users automatically get gateware** when they add `my_library` to `lib_deps`
+
+See `libs/papilio_lib_template/` for a complete library template following these standards.
+
 ### Mixed-Language Projects
 
 The Gowin toolchain fully supports mixed Verilog and VHDL designs. Simply place your source files in the `fpga/src/` directory:
