@@ -8,6 +8,14 @@ Copy the relevant sections from these files to your project's `fpga/constraints/
 
 ## Available Templates
 
+### papilio_arcade_base.cst
+
+Minimal pin template for Papilio RetroCade when only the ESP32 SPI bridge and system clock are required. This is ideal for auto-generated designs or early bring-up where unused peripherals should not trigger Gowin constraint errors.
+
+**Signals included:**
+- 27 MHz clock input (`clk`)
+- SPI bridge pins (`spi_sclk`, `spi_mosi`, `spi_miso`, `spi_cs_n`)
+
 ### papilio_retrocade.cst
 
 Complete pin mapping for Papilio RetroCade board (GW2AR-18 FPGA).
@@ -24,7 +32,10 @@ Complete pin mapping for Papilio RetroCade board (GW2AR-18 FPGA).
 **Example usage:**
 
 ```bash
-# Copy entire file as starting point
+# Start with minimal SPI-only template (recommended default)
+cp misc/cst/papilio_arcade_base.cst fpga/constraints/pins.cst
+
+# Or copy the complete file when you need every peripheral
 cp misc/cst/papilio_retrocade.cst fpga/constraints/pins.cst
 
 # Then remove unused sections and rename signals as needed

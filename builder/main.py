@@ -13,17 +13,18 @@ platform = env.PioPlatform()
 board = env.BoardConfig()
 
 # Import FPGA build functions from scripts
-env.SConscript(join(platform.get_dir(), "builder", "fpga_builder.py"), exports="env")
+# Use relative path - SConscript resolves relative to this file's location
+env.SConscript("fpga_builder.py", exports="env")
 
 # Get framework
 frameworks = env.get("PIOFRAMEWORK", [])
 
 if "hdl" in frameworks:
     # Pure FPGA build
-    env.SConscript(join(platform.get_dir(), "builder", "frameworks", "hdl.py"), exports="env")
+    env.SConscript("frameworks/hdl.py", exports="env")
 else:
     # Default to hdl framework for FPGA-only boards
-    env.SConscript(join(platform.get_dir(), "builder", "frameworks", "hdl.py"), exports="env")
+    env.SConscript("frameworks/hdl.py", exports="env")
 
 # Configure upload based on protocol
 upload_protocol = env.subst("$UPLOAD_PROTOCOL")

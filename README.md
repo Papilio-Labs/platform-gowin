@@ -245,7 +245,10 @@ The platform includes board definitions with correct FPGA device settings and pi
 Reference CST files for supported boards are available in `misc/cst/`:
 
 ```bash
-# Copy complete pin template for your board
+# Start with the minimal SPI-only template (recommended default)
+cp misc/cst/papilio_arcade_base.cst fpga/constraints/pins.cst
+
+# Copy the full template when you need every peripheral
 cp misc/cst/papilio_retrocade.cst fpga/constraints/pins.cst
 
 # Or copy individual peripheral sections as needed

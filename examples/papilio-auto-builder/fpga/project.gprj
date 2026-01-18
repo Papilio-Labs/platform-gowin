@@ -1,0 +1,9 @@
+<?xml version='1.0' encoding='utf-8'?>
+<Project>
+    <Template>FPGA</Template>
+    <Version>5</Version>
+    <Device name="GW2A-18C" pn="GW2A-LV18PG256C8/I7">gw2a18c-011</Device>
+    <FileList>
+        
+    <File path="src/top.v" type="file.verilog" enable="1" /><File path="../../../../dev_wishbone_bus/libs/papilio_wb_register/gateware/constraints/papilio_retrocade.cst" type="file.cst" enable="1" /><File path="../.pio/libdeps/papilio_retrocade_fpga/papilio_wishbone_rgb_led/gateware/constraints/papilio_retrocade.cst" type="file.cst" enable="1" /><File path="constraints/pins.cst" type="file.cst" enable="1" /><File path="../../../misc/cst/papilio_arcade_base.cst" type="file.cst" enable="1" /><File path="../../../../dev_wishbone_bus/libs/papilio_spi_slave/gateware/fifo_sync.v" type="file.verilog" enable="1" /><File path="../../../../dev_wishbone_bus/libs/papilio_spi_slave/gateware/spi_bram_controller.v" type="file.verilog" enable="1" /><File path="../../../../dev_wishbone_bus/libs/papilio_spi_slave/gateware/spi_slave.v" type="file.verilog" enable="1" /><File path="../../../../dev_wishbone_bus/libs/papilio_spi_slave/gateware/spi_slave_fifo.v" type="file.verilog" enable="1" /><File path="../../../../dev_wishbone_bus/libs/papilio_spi_slave/gateware/spi_wb_bridge.v" type="file.verilog" enable="1" /><File path="../../../../dev_wishbone_bus/libs/papilio_wb_register/gateware/wb_register_block.v" type="file.verilog" enable="1" /><File path="../.pio/libdeps/papilio_retrocade_fpga/papilio_wishbone_rgb_led/gateware/wb_rgb_led_ctrl.v" type="file.verilog" enable="1" /><File path="../.pio/libdeps/papilio_retrocade_fpga/papilio_wishbone_rgb_led/gateware/wb_simple_rgb_led.v" type="file.verilog" enable="1" /></FileList>
+</Project>

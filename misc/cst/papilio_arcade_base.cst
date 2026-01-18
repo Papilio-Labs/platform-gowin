@@ -1,0 +1,26 @@
+//******************************************************************************
+// Papilio RetroCade Base Pin Constraints
+// Minimal pins required for SPI bridge + system clock
+// Derived from papilio_retrocade_hardware repository
+//******************************************************************************
+
+// Clock Input (27MHz oscillator on Tang Primer 20K module)
+IO_LOC "clk_27mhz" H11;
+IO_PORT "clk_27mhz" PULL_MODE=UP IO_TYPE=LVCMOS33;
+
+// SPI interface from ESP32 (GPIO1-4 to reduce EMI)
+// ESP32 GPIO1 (SPI CLK) → FPGA pin A9 (IOL27A)
+IO_LOC "spi_sclk" A9;
+IO_PORT "spi_sclk" IO_TYPE=LVCMOS33 PULL_MODE=NONE;
+
+// ESP32 GPIO2 (SPI MOSI) → FPGA pin L12 (IOT32_N)
+IO_LOC "spi_mosi" L12;
+IO_PORT "spi_mosi" IO_TYPE=LVCMOS33 PULL_MODE=UP;
+
+// ESP32 GPIO4 (SPI MISO) → FPGA pin F10 (IOL11A)
+IO_LOC "spi_miso" F10;
+IO_PORT "spi_miso" IO_TYPE=LVCMOS33 PULL_MODE=NONE;
+
+// ESP32 GPIO3 (SPI CS#) → FPGA pin J11 (IOT32_P)
+IO_LOC "spi_cs_n" J11;
+IO_PORT "spi_cs_n" IO_TYPE=LVCMOS33 PULL_MODE=UP;
