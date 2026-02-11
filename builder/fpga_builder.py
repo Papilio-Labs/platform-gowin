@@ -4,6 +4,8 @@ FPGA Builder Helper Functions
 Provides SCons-compatible functions for building Gowin FPGA bitstreams.
 """
 
+PLATFORM_VERSION = "1.0.1"
+
 Import("env")
 import os
 import sys
@@ -186,7 +188,7 @@ def get_fpga_sources(env):
 def build_fpga_action(target, source, env):
     """SCons action for building FPGA bitstream."""
     print("=" * 70)
-    print("Building FPGA Gateware...")
+    print(f"Building FPGA Gateware (Platform v{PLATFORM_VERSION})...")
     print("=" * 70)
     
     project_dir = Path(env.get("PROJECT_DIR"))
