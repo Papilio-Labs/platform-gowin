@@ -9,10 +9,13 @@ PLATFORM_VERSION = "1.0.1"
 Import("env")
 import os
 import sys
+import json
 import subprocess
 import shutil
+from fnmatch import fnmatch
 from pathlib import Path
 import xml.etree.ElementTree as ET
+from platformio.package.manager.library import LibraryPackageManager
 
 def find_gowin_toolchain(env):
     """Locate Gowin toolchain installation."""
@@ -84,6 +87,7 @@ def scan_fpga_sources(fpga_dir):
     sources = {
         'verilog': [],
         'vhdl': [],
+        'headers': [],
         'constraints': []
     }
     
@@ -95,8 +99,10 @@ def scan_fpga_sources(fpga_dir):
     src_dir = fpga_path / "src"
     if src_dir.exists():
         # Verilog/SystemVerilog files
-        for ext in ['.v', '.sv', '.vh', '.svh']:
+        for ext in ['.v', '.sv']:
             sources['verilog'].extend(src_dir.rglob(f"*{ext}"))
+        for ext in ['.vh', '.svh']:
+            sources['headers'].extend(src_dir.rglob(f"*{ext}"))
         # VHDL files
         for ext in ['.vhd', '.vhdl']:
             sources['vhdl'].extend(src_dir.rglob(f"*{ext}"))
@@ -108,60 +114,98 @@ def scan_fpga_sources(fpga_dir):
     
     return sources
 
-def update_gprj_file(gprj_path, sources, fpga_dir):
+def scan_library_sources(env):
+    """Scan gateware in the current environment's resolved library dependencies."""
+    sources = {'verilog': [], 'vhdl': [], 'headers': []}
+    specs = list(env.GetProjectOption("lib_deps", []))
+    if not specs:
+        return sources
+
+    libdeps_dir = Path(env.subst("$PROJECT_LIBDEPS_DIR")) / env.subst("$PIOENV")
+    manager = LibraryPackageManager(str(libdeps_dir))
+    exclusions = env.BoardConfig().get("build.fpga_exclude_sources", [])
+    if isinstance(exclusions, str):
+        exclusions = exclusions.split()
+    seen = set()
+    while specs:
+        spec = specs.pop(0)
+        package = manager.get_package(spec)
+        if not package:
+            raise RuntimeError(f"FPGA library dependency not installed: {spec}")
+        package_path = Path(os.path.abspath(package.path))
+        canonical_path = package_path.resolve()
+        if canonical_path in seen:
+            continue
+        seen.add(canonical_path)
+        gateware = package_path / "gateware"
+        if gateware.is_dir():
+            for path in gateware.rglob("*"):
+                relative_path = f"{package_path.name}/{path.relative_to(package_path).as_posix()}"
+                if not path.is_file() or any(fnmatch(relative_path, pattern) for pattern in exclusions):
+                    continue
+                if path.suffix.lower() in ('.v', '.sv'):
+                    sources['verilog'].append(path)
+                elif path.suffix.lower() in ('.vh', '.svh'):
+                    sources['headers'].append(path)
+                elif path.suffix.lower() in ('.vhd', '.vhdl'):
+                    sources['vhdl'].append(path)
+        for dependency in manager.get_pkg_dependencies(package) or []:
+            dependency_spec = manager.dependency_to_spec(dependency)
+            if dependency.get('optional') and not manager.get_package(dependency_spec):
+                continue
+            specs.append(dependency_spec)
+    return sources
+
+def is_within(path, directory):
+    try:
+        Path(os.path.abspath(path)).relative_to(Path(os.path.abspath(directory)))
+        return True
+    except ValueError:
+        return False
+
+def update_gprj_file(gprj_path, sources, fpga_dir, library_sources, libdeps_dir):
     """Update .gprj XML file with discovered source files."""
     if not os.path.exists(gprj_path):
         print(f"Warning: Project file not found: {gprj_path}")
         return False
     
-    try:
-        tree = ET.parse(gprj_path)
-        root = tree.getroot()
-        
-        filelist = root.find('FileList')
-        if filelist is None:
-            filelist = ET.SubElement(root, 'FileList')
-        
-        # Remove existing auto-generated entries
-        for file_elem in list(filelist.findall('File')):
-            path = file_elem.get('path', '')
-            if any(ext in path for ext in ['.v', '.sv', '.vhd', '.vhdl', '.cst', '.sdc']):
-                if 'src/' in path or 'constraints/' in path:
-                    filelist.remove(file_elem)
-        
-        fpga_path = Path(fpga_dir)
-        gprj_parent = Path(gprj_path).parent
-        
-        # Add Verilog source files
-        for verilog_file in sorted(sources['verilog']):
-            file_elem = ET.SubElement(filelist, 'File')
-            rel_path = verilog_file.relative_to(gprj_parent)
-            file_elem.set('path', str(rel_path).replace('\\', '/'))
-            file_elem.set('type', 'file.verilog')
-            file_elem.set('enable', '1')
-        
-        # Add VHDL source files
-        for vhdl_file in sorted(sources['vhdl']):
-            file_elem = ET.SubElement(filelist, 'File')
-            rel_path = vhdl_file.relative_to(gprj_parent)
-            file_elem.set('path', str(rel_path).replace('\\', '/'))
-            file_elem.set('type', 'file.vhdl')
-            file_elem.set('enable', '1')
-        
-        # Add constraint files
-        for cst_file in sorted(sources['constraints']):
-            file_elem = ET.SubElement(filelist, 'File')
-            rel_path = cst_file.relative_to(gprj_parent)
-            file_elem.set('path', str(rel_path).replace('\\', '/'))
-            file_elem.set('type', 'file.cst')
-            file_elem.set('enable', '1')
-        
-        tree.write(gprj_path, encoding='utf-8', xml_declaration=True)
-        return True
-        
-    except Exception as e:
-        print(f"Error updating .gprj file: {e}")
-        return False
+    tree = ET.parse(gprj_path)
+    root = tree.getroot()
+    filelist = root.find('FileList')
+    if filelist is None:
+        filelist = ET.SubElement(root, 'FileList')
+
+    gprj_parent = Path(gprj_path).parent
+    hdl_extensions = {'.v', '.sv', '.vh', '.svh', '.vhd', '.vhdl'}
+    for file_elem in list(filelist.findall('File')):
+        path = gprj_parent / file_elem.get('path', '')
+        managed_hdl = path.suffix.lower() in hdl_extensions and (
+            is_within(path, Path(fpga_dir) / "src") or is_within(path, libdeps_dir)
+        )
+        managed_constraint = path.suffix.lower() == '.cst' and is_within(path, Path(fpga_dir) / "constraints")
+        if managed_hdl or managed_constraint:
+            filelist.remove(file_elem)
+
+    for group, file_type in (
+        (sources['verilog'], 'file.verilog'),
+        (sources['vhdl'], 'file.vhdl'),
+        (sources['constraints'], 'file.cst'),
+        (library_sources['verilog'], 'file.verilog'),
+        (library_sources['vhdl'], 'file.vhdl'),
+    ):
+        for path in sorted(group):
+            try:
+                project_path = os.path.relpath(path, gprj_parent)
+            except ValueError:
+                project_path = str(path)
+            ET.SubElement(filelist, 'File', {
+                'path': project_path.replace('\\', '/'),
+                'type': file_type,
+                'enable': '1',
+            })
+
+    tree.write(gprj_path, encoding='utf-8', xml_declaration=True)
+    return True
 
 def get_fpga_sources(env):
     """Get all FPGA source files for dependency tracking."""
@@ -181,7 +225,12 @@ def get_fpga_sources(env):
         sources = scan_fpga_sources(fpga_dir)
         all_sources.extend([str(f) for f in sources['verilog']])
         all_sources.extend([str(f) for f in sources['vhdl']])
+        all_sources.extend([str(f) for f in sources['headers']])
         all_sources.extend([str(f) for f in sources['constraints']])
+        library_sources = scan_library_sources(env)
+        all_sources.extend(str(f) for f in library_sources['verilog'])
+        all_sources.extend(str(f) for f in library_sources['vhdl'])
+        all_sources.extend(str(f) for f in library_sources['headers'])
     
     return all_sources
 
@@ -220,15 +269,21 @@ def build_fpga_action(target, source, env):
     # Scan and update sources
     print("Scanning for FPGA source files...")
     sources = scan_fpga_sources(fpga_dir)
+    library_sources = scan_library_sources(env)
     print(f"  Found {len(sources['verilog'])} Verilog/SystemVerilog file(s)")
     print(f"  Found {len(sources['vhdl'])} VHDL file(s)")
     print(f"  Found {len(sources['constraints'])} constraint file(s)")
+    print(f"  Found {len(library_sources['verilog']) + len(library_sources['vhdl'])} library HDL file(s)")
     
     print(f"Updating project file: {gprj_path}")
-    update_gprj_file(gprj_path, sources, fpga_dir)
+    libdeps_dir = Path(env.subst("$PROJECT_LIBDEPS_DIR")) / env.subst("$PIOENV")
+    if not update_gprj_file(gprj_path, sources, fpga_dir, library_sources, libdeps_dir):
+        return 1
     
     # Register all source files as dependencies for this build
-    all_sources = sources['verilog'] + sources['vhdl'] + sources['constraints']
+    all_sources = (sources['verilog'] + sources['vhdl'] + sources['constraints']
+                   + sources['headers'] + library_sources['verilog'] + library_sources['vhdl']
+                   + library_sources['headers'])
     all_sources.append(gprj_path)  # Also depend on the project file
     # Convert Path objects to strings for SCons
     all_sources_str = [str(s) for s in all_sources]
@@ -254,6 +309,15 @@ def build_fpga_action(target, source, env):
     
     # Create Tcl script for gw_sh in impl directory
     tcl_script = impl_dir / "build_script.tcl"
+    config_path = impl_dir / "project_process_config.json"
+    configured_include_paths = []
+    if config_path.is_file():
+        with config_path.open(encoding="utf-8") as config_file:
+            configured_include_paths = json.load(config_file).get("IncludePath", [])
+    preserved_include_paths = [
+        path for path in configured_include_paths
+        if not is_within(Path(path) if Path(path).is_absolute() else fpga_dir / path, libdeps_dir)
+    ]
     with open(tcl_script, 'w') as f:
         f.write(f"""# Auto-generated Tcl script for gw_sh
 # Open project
@@ -262,6 +326,11 @@ open_project ../{gprj_path.name}
 # Set top module explicitly
 set_option -top_module {top_module}
 """)
+        header_dirs = sorted({path.parent.resolve() for path in sources['headers'] + library_sources['headers']})
+        include_paths = list(dict.fromkeys(preserved_include_paths + [path.as_posix() for path in header_dirs]))
+        if configured_include_paths or include_paths:
+            tcl_paths = ";".join(include_paths)
+            f.write(f"\nset_option -include_path {{{tcl_paths}}}\n")
         
         # Add dual-purpose pin configuration options if enabled
         if use_sspi_as_gpio in ("1", "true", "True", "yes", "Yes"):
@@ -333,7 +402,7 @@ exit
         return 1
     
     bitstream = bitstream_candidates[0]
-    print(f"✓ FPGA bitstream generated: {bitstream}")
+    print(f"FPGA bitstream generated: {bitstream}")
     
     # Copy to build directory
     build_dir = Path(env.subst("$BUILD_DIR"))
@@ -341,10 +410,10 @@ exit
     shutil.copy2(bitstream, dest)
     # Ensure the copied file is writable (remove read-only attribute)
     os.chmod(dest, 0o666)
-    print(f"✓ Bitstream copied to {dest}")
+    print(f"Bitstream copied to {dest}")
     
     print("=" * 70)
-    print("✓ FPGA Build Complete!")
+    print("FPGA Build Complete!")
     print("=" * 70)
     
     return 0

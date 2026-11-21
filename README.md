@@ -186,6 +186,41 @@ upload_protocol = pesptool  ; or openfpgaloader, gowin, esptool
 The build system manages HDL source files (`.v`, `.sv`, `.vhd`, `.vhdl`) and constraints (`.cst`). 
 All IP cores and custom project settings are preserved.
 
+### Library Gateware
+
+The FPGA environment discovers HDL under the `gateware/` directory of its
+resolved `lib_deps` libraries and their dependencies. Declare the libraries
+in the FPGA environment as well as the firmware environment, for example:
+
+```ini
+[env:fpga]
+platform = gowin
+board = papilio_retrocade_fpga
+framework = hdl
+lib_deps = ${env:esp32.lib_deps}
+```
+
+PlatformIO installs these libraries when the FPGA environment is built.
+Verilog headers are tracked as dependencies and their directories are added
+to the Gowin include path; they are not compiled as standalone sources.
+The build does not generate or modify FPGA or firmware source code. Wire
+peripherals and add board pin constraints in the project yourself. Library
+constraint files are not included automatically.
+
+If installed libraries contain conflicting HDL modules, exclude the
+unwanted files explicitly using paths relative to the library storage
+directory. Shell-style wildcards are supported:
+
+```ini
+board_build.fpga_exclude_sources =
+    papilio_spi_slave/gateware/spi_wb_bridge.v
+```
+
+The exclusion above is needed when using the current SPI and Wishbone bus
+libraries together: each contains a different `simple_spi_wb_bridge` module.
+Choose exclusions appropriate to the design; the platform does not silently
+choose between conflicting implementations.
+
 ### Mixed-Language Projects
 
 The Gowin toolchain fully supports mixed Verilog and VHDL designs. Simply place your source files in the `fpga/src/` directory:
