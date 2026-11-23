@@ -4,7 +4,7 @@ FPGA Builder Helper Functions
 Provides SCons-compatible functions for building Gowin FPGA bitstreams.
 """
 
-PLATFORM_VERSION = "1.0.1"
+PLATFORM_VERSION = "1.2.0"
 
 Import("env")
 import os

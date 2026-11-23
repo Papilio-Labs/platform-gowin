@@ -14,7 +14,7 @@
   "name": "Papilio RetroCade FPGA",
   "upload": {
     "require_upload_port": false,
-    "protocol": "pesptool",
+    "protocol": "papilio_serial",
     "protocols": ["papilio_serial", "papilio_ota", "pesptool", "openfpgaloader", "gowin"]
   },
   "url": "https://github.com/Papilio-Labs/papilio_retrocade_hardware",

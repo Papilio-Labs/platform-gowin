@@ -48,6 +48,21 @@ def table():
 
 
 class UploadTests(unittest.TestCase):
+    def test_board_default_enables_recovery_tool_and_allows_legacy_override(self):
+        platform_class = runpy.run_path(str(ROOT / "platform.py"))["GowinPlatform"]
+        for targets in (["upload"], ["nobuild", "upload"]):
+            for protocol in (None, "pesptool"):
+                with self.subTest(targets=targets, protocol=protocol):
+                    platform = platform_class(str(ROOT / "platform.json"))
+                    variables = {"board": "papilio_retrocade_fpga", "framework": ["hdl"]}
+                    if protocol:
+                        variables["upload_protocol"] = protocol
+                    platform.configure_default_packages(variables, targets)
+                    self.assertEqual(
+                        platform.packages["tool-esptoolpy"]["optional"],
+                        protocol == "pesptool",
+                    )
+
     def test_managed_esptool_is_required_only_for_resident_protocols(self):
         platform_class = runpy.run_path(str(ROOT / "platform.py"))["GowinPlatform"]
         for protocol in ("pesptool", "papilio_serial", "papilio_ota"):

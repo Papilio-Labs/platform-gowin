@@ -56,7 +56,7 @@ board = papilio_retrocade
 
 ### Install Upload Tools
 
-#### Resident Papilio ESP bootloader (recommended for RetroCade)
+#### Resident Papilio ESP bootloader (default for papilio_retrocade_fpga)
 
 No desktop Loader, MCP server, Node.js, global pip installation, or pesptool
 executable is required. PlatformIO installs its managed `tool-esptoolpy`;
@@ -109,11 +109,58 @@ ESP PlatformIO environment can install the same scripts through
 `platform_packages`. See the
 [project template](https://github.com/Papilio-Labs/papilio-project-template)
 for its application-only custom-upload hook and partition configuration.
-Existing pesptool/openFPGALoader/Gowin protocols are unchanged.
+The `papilio_retrocade_fpga` board defaults to `papilio_serial` starting in
+platform v1.2.0. Existing pesptool/openFPGALoader/Gowin protocols remain
+explicitly selectable; other board defaults are unchanged.
 
 Live Windows tests cover both transports with FPGA and ESP images;
 Linux/macOS hardware validation and repeated reset/power-cycle testing
 remain necessary. On Linux, grant the normal serial-device permissions.
+
+### Versioned installs and upgrading existing projects
+
+Platform **v1.2.0** includes uploader package **0.2.0**. Both are installed
+from the same Git tag, not separate registry packages. Template **v0.1.0**
+pins both references to this tag. PlatformIO registry publication is deferred.
+
+For a stable FPGA installation:
+
+```ini
+[env:fpga]
+platform = https://github.com/Papilio-Labs/platform-gowin.git#v1.2.0
+board = papilio_retrocade_fpga
+framework = hdl
+; papilio_serial is the board default; no upload_protocol override is needed.
+```
+
+For existing projects:
+
+1. Replace the FPGA platform URL with the tagged URL above. Remove any
+   `upload_protocol = pesptool` override to adopt USB serial. Keep it explicitly
+   set only for legacy hardware/provisioning; that path still uses the legacy
+   bridge and flash offset and is not suitable for the current resident loader.
+2. For ESP uploads, copy the upload hook and partition CSV from
+   [template v0.1.0](https://github.com/Papilio-Labs/papilio-project-template/tree/v0.1.0),
+   and merge its ESP custom-upload, partition, application size, and managed
+   package settings into your configuration. Use the matching tool reference:
+
+   ```ini
+   platform_packages =
+       tool-papilio-upload = https://github.com/Papilio-Labs/platform-gowin.git#v1.2.0
+       platformio/tool-esptoolpy @ ~2.40900.0
+   ```
+
+3. Run `pio pkg install` in the project to resolve the new tagged dependencies,
+   then rebuild before uploading. If intentionally following an unpinned Git
+   URL instead, run `pio pkg update` to refresh its cached checkout. Pinned
+   projects must change both Git references when adopting a later release.
+4. Confirm the compatible resident loader/layout is already provisioned;
+   these settings do not migrate an older board. Upload FPGA first, then ESP.
+   Close serial monitors and allow for OTA metadata backup/clearing on recovery.
+
+Windows USB/HTTP uploads were bench-tested before this release; a fresh
+published-template end-to-end build/upload, extended reset stress, and
+Linux/macOS hardware tests remain pending.
 
 #### pesptool (for ESP32 + FPGA boards)
 
@@ -307,7 +354,7 @@ The build system automatically detects and adds all HDL files to your `.gprj` pr
 
 ## Upload Protocols
 
-### pesptool (Default for Papilio boards)
+### pesptool (legacy, explicitly selected)
 
 Uploads FPGA bitstream via ESP32-S3 SPI bridge to flash address 0x100000.
 

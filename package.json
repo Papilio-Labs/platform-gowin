@@ -1,6 +1,6 @@
 {
   "name": "tool-papilio-upload",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "PlatformIO USB serial and HTTP uploads to the resident Papilio ESP bootloader",
   "license": "MIT",
   "repository": {

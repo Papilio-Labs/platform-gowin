@@ -28,9 +28,13 @@ class GowinPlatform(PlatformBase):
         or specify path via GOWIN_HOME environment variable or
         board_build.gowin_path in platformio.ini.
         """
-        if variables.get("upload_protocol") in ("papilio_serial", "papilio_ota"):
+        result = super().configure_default_packages(variables, targets)
+        protocol = variables.get("upload_protocol")
+        if not protocol and variables.get("board"):
+            protocol = self.board_config(variables["board"]).get("upload.protocol")
+        if protocol in ("papilio_serial", "papilio_ota"):
             self.packages["tool-esptoolpy"]["optional"] = False
-        return super().configure_default_packages(variables, targets)
+        return result
 
     def is_embedded(self):
         """
