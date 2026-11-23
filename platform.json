@@ -33,6 +33,12 @@
     }
   },
   "packages": {
+    "tool-esptoolpy": {
+      "type": "uploader",
+      "owner": "platformio",
+      "optional": true,
+      "version": "~2.40900.0"
+    },
     "toolchain-gowin": {
       "type": "toolchain",
       "optional": true,

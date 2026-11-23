@@ -15,7 +15,7 @@
   "upload": {
     "require_upload_port": false,
     "protocol": "pesptool",
-    "protocols": ["pesptool", "openfpgaloader", "gowin"]
+    "protocols": ["papilio_serial", "papilio_ota", "pesptool", "openfpgaloader", "gowin"]
   },
   "url": "https://github.com/Papilio-Labs/papilio_retrocade_hardware",
   "vendor": "Papilio"

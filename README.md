@@ -22,7 +22,7 @@ PlatformIO platform for Gowin FPGA development. Supports pure FPGA projects (Ver
 ✅ Automatic HDL source file discovery (Verilog, SystemVerilog, VHDL)
 ✅ Mixed-language projects (Verilog + VHDL)
 ✅ Preserves user-added IP cores in Gowin projects
-✅ Multiple upload protocols (pesptool, openFPGALoader, Gowin Programmer)
+✅ Direct resident-loader USB serial and HTTP uploads, plus legacy programmers
 ✅ Pure FPGA projects with `framework = hdl` (or `framework = verilog`)
 ✅ Dual-target projects (MCU + FPGA) with `framework = arduino`
 ✅ Integrated with PlatformIO ecosystem
@@ -56,7 +56,69 @@ board = papilio_retrocade
 
 ### Install Upload Tools
 
+#### Resident Papilio ESP bootloader (recommended for RetroCade)
+
+No desktop Loader, MCP server, Node.js, global pip installation, or pesptool
+executable is required. PlatformIO installs its managed `tool-esptoolpy`;
+the platform ships a Python uploader that uses PlatformIO's pyserial and
+Python's HTTP library. The board must already have the resident Papilio
+factory loader and the supported 4 MB factory/OTA partition layout.
+
+```ini
+[env:fpga]
+platform = https://github.com/Papilio-Labs/platform-gowin.git
+board = papilio_retrocade_fpga
+framework = hdl
+upload_protocol = papilio_serial
+; Optional if board detection is unambiguous:
+; upload_port = COM10
+```
+
+For HTTP uploads, select `papilio_ota` and set `custom_papilio_host` to the
+board's IP/hostname. `custom_papilio_http_port` defaults to 3232. A running
+factory loader requires no USB connection for this transport.
+
+```ini
+upload_protocol = papilio_ota
+custom_papilio_host = 192.168.1.100
+; For an app without a network /goto-loader handler, enter factory over USB:
+; custom_papilio_enter_via_usb = yes
+; custom_papilio_usb_port = COM10
+```
+
+USB recovery first verifies the partition checksum/layout and factory
+application identity. It saves otadata under
+`.pio/build/<environment>/papilio-backups/`, then clears only OTA
+selection/rollback metadata and watchdog-resets into factory. Application
+images, partition table, factory firmware, and loader NVS stay intact.
+The loader's separate NVS last-slot record chooses update/resume slots.
+Release serial monitors before uploading. If native-USB reset fails,
+follow the explicit RESET/BOOT instructions; the uploader never falls back
+to mass erase or full firmware replacement.
+
+FPGA uploads write external FPGA flash at **0x0**, automatically loading
+the embedded bridge on-board. They resume the existing ESP application
+unless `custom_papilio_stay_in_loader = yes` is set. No host SPI pin
+configuration is needed. USB transfer errors and missing completion
+responses fail the upload; HTTP uploads check status and response bodies.
+An HTTP application success response confirms image validation/selection,
+not independent observation of the app's subsequent boot.
+
+The same repository also has a `tool-papilio-upload` tool manifest, so an
+ESP PlatformIO environment can install the same scripts through
+`platform_packages`. See the
+[project template](https://github.com/Papilio-Labs/papilio_project_template)
+for its application-only custom-upload hook and partition configuration.
+Existing pesptool/openFPGALoader/Gowin protocols are unchanged.
+
+Live Windows tests cover both transports with FPGA and ESP images;
+Linux/macOS hardware validation and repeated reset/power-cycle testing
+remain necessary. On Linux, grant the normal serial-device permissions.
+
 #### pesptool (for ESP32 + FPGA boards)
+
+This is the legacy bridge/multiboot path, not the recommended resident-loader
+uploader. It does not prepare the current on-board FPGA bridge by itself.
 
 **Windows:** Automatically downloaded by PlatformIO when you set `upload_protocol = pesptool`
 
@@ -155,6 +217,12 @@ pio run -t upload
 ```
 
 ## Configuration
+
+### Uploader tests
+
+```bash
+python -m unittest discover -s tests -p "test_*.py"
+```
 
 ### platformio.ini Options
 

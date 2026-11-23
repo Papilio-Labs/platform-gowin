@@ -28,7 +28,8 @@ class GowinPlatform(PlatformBase):
         or specify path via GOWIN_HOME environment variable or
         board_build.gowin_path in platformio.ini.
         """
-        # No additional package configuration needed for HDL framework
+        if variables.get("upload_protocol") in ("papilio_serial", "papilio_ota"):
+            self.packages["tool-esptoolpy"]["optional"] = False
         return super().configure_default_packages(variables, targets)
 
     def is_embedded(self):

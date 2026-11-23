@@ -35,7 +35,17 @@ env.Replace(
     UPLOADCMD="$UPLOADER $UPLOADERFLAGS $SOURCE"
 )
 
-if upload_protocol == "pesptool":
+if upload_protocol in ("papilio_serial", "papilio_ota"):
+    import runpy
+
+    uploader_dir = join(platform.get_dir(), "builder")
+    configure = runpy.run_path(join(uploader_dir, "papilio_upload_hook.py"))["configure_upload"]
+    upload = configure(env, "fpga", uploader_dir)
+    upload_actions = [
+        env.VerboseAction(upload, "Uploading FPGA through the resident Papilio loader...")
+    ]
+
+elif upload_protocol == "pesptool":
     # Download pesptool.exe on Windows if not already available
     import sys
     import os
