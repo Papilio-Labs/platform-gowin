@@ -34,7 +34,7 @@
   },
   "packages": {
     "tool-esptoolpy": {
-      "type": "uploader",
+      "type": "tool",
       "owner": "platformio",
       "optional": true,
       "version": "~2.40900.0"

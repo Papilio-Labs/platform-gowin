@@ -48,6 +48,15 @@ def table():
 
 
 class UploadTests(unittest.TestCase):
+    def test_managed_esptool_is_required_only_for_resident_protocols(self):
+        platform_class = runpy.run_path(str(ROOT / "platform.py"))["GowinPlatform"]
+        for protocol in ("pesptool", "papilio_serial", "papilio_ota"):
+            platform = platform_class(str(ROOT / "platform.json"))
+            platform.configure_default_packages({"upload_protocol": protocol}, ["upload"])
+            self.assertEqual(
+                platform.packages["tool-esptoolpy"]["optional"], protocol == "pesptool"
+            )
+
     def test_layout_checksum_and_changed_factory_are_rejected(self):
         validate = uploader["validate_layout"]
         valid = table()

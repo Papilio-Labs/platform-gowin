@@ -107,7 +107,7 @@ not independent observation of the app's subsequent boot.
 The same repository also has a `tool-papilio-upload` tool manifest, so an
 ESP PlatformIO environment can install the same scripts through
 `platform_packages`. See the
-[project template](https://github.com/Papilio-Labs/papilio_project_template)
+[project template](https://github.com/Papilio-Labs/papilio-project-template)
 for its application-only custom-upload hook and partition configuration.
 Existing pesptool/openFPGALoader/Gowin protocols are unchanged.
 
